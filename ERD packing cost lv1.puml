@@ -1,0 +1,453 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+package ProductionMasterService #DDD {
+    entity "Project" as project {
+        code : varchar(12) <<PK>>
+    --
+        name : varchar(64)
+        description : text
+        manager : int <<FK>>
+        start_date : date
+        end_date : date
+        status : enum (Draft, Active, On Hold, Completed)
+        note: varchar
+    }
+
+    entity "ProjectModel" as project_model #DDD {
+        * project_code : varchar(12) <<PK>><<FK>>
+        * model_code : varchar <<PK>><<FK>>
+    }
+
+    entity "Model" as model {
+        code : varchar <<PK>>
+    --
+        name : varchar
+        remark : varchar
+    }
+
+    entity "ModuleType" as module_type {
+        code : varchar <<PK>>
+    --
+        item_no : varchar <<FK>>
+        dimension_width : int
+        dimension_height : int
+        dimension_length : int
+        dimension_inner_width : numeric (3,2)
+        dimension_inner_length : numeric (3,2)
+        dimension_inner_height : numeric (3,2)
+        dimension_outer_width : numeric (3,2)
+        dimension_outer_length : numeric (3,2)
+        dimension_outer_height : numeric (3,2)
+    }
+
+    entity "Country" as country {
+        code : char (4) <<PK>>
+    --
+        country_name : varchar
+    }
+
+    entity "ReportingPeriod" as rp {
+        code : varchar(8) <<PK>>
+        * periodname : varchar (20)
+        * year : int
+    }
+
+    entity "ManHourParams" as man_hour_params {
+        * param_id : varchar(10) <<PK>><<FK>>
+        * param_name : varchar(20) <<PK>><<FK>>
+        * value : float;
+    }
+
+    entity "rate" as rate {
+      periodname : varchar(20) <<PK>><<FK>>
+      direct_labor_rate : numeric (10, 2)
+      indirect_labor_rate : numeric (10, 2)
+      facility_rate : numeric (10, 2)
+      labor_rate : numeric (10, 2)
+      container_40_rate : numeric (10, 2)
+      container_20_rate : numeric (10, 2)
+      milkrun_efficiency_percentage : numeric (3, 2)
+    }
+
+}
+
+package PartService #DDD {
+    entity "Part" as part {
+        * part_no : varchar(10)
+    --
+        suffix_code : varchar(2)
+        part_name : varchar(20)
+        + parent_part_no : varchar(10) (FK)
+        + supplier_code : varchar(10) (FK)
+        dimension_length : int
+        dimension_width : int
+        dimension_height: int
+        weight_per_pc : int
+        qty_per_box : int
+        total_weight : int 
+    }
+
+    entity "Preparation Time" as prep_time {
+        * part_no : varchar(10)
+        --
+        boxing : int
+        stacking : int
+    }
+    
+
+    entity "PartType" as part_type {
+      * part_no: varchar (10)
+      type :enum (inner, outer, part)
+    }
+
+    entity "suffix" as suffix {
+        * suffix_code : varchar(2)
+    --
+        note : varchar (10)
+    }    
+
+    entity "inhouse_price" as inhouse_price {
+        * part_no : varchar(10) <<PK>><<FK>>
+        * periodname : varchar(20) <<PK>><<FK>>
+        msp : numeric (10, 2) 
+        jsp : numeric (10, 2)
+        local_outhouse : numeric (10, 2)
+        tooling_outhouse : numeric (10, 2)
+        raw_material : numeric (10, 2)
+        labor : numeric (10, 2)
+        foh_fixed : numeric (10, 2)
+        foh_var : numeric (10, 2)
+        unfinished_depre : numeric (10, 2)
+        total_process_cost : numeric (10, 2)
+        exclusive_investment : numeric (10, 2)
+        total_cost : numeric (10, 2)
+    }
+
+    entity "outhouse_price" as outhouse_price {
+        * part_no : varchar(10) <<PK>><<FK>>
+        * periodname : varchar(20) <<PK>><<FK>>
+        source : varchar
+        price : numeric(10, 2)
+    }
+}
+
+package PackingService #DDD {
+    entity "PackingSpec" as ps {
+        * spec_code : varchar <<PK>>
+    --
+        spec_code_ref : varchar <<FK>>
+        * model_code : varchar  <<FK>>
+        issued_date : timestamp
+        effective_date : timestamp
+    }
+   /'
+    entity "Part" as part {
+        * part_no : varchar(10)
+    --
+        suffix_code : varchar(2)
+        part_name : varchar(20)
+        + parent_part_no : varchar(10) (FK)
+        + supplier_code : varchar(10) (FK)
+        dimension_length : int
+        dimension_width : int
+        dimension_height: int
+        weight_per_pc : int
+        qty_per_box : int
+        total_weight : int 
+    }
+    '/
+    entity "PackingSpecPackingMaterial" as pspm {
+        spec_code : varchar
+
+    }
+
+    entity "PackingMaterialPart" as packing_part {
+        * part_no : varchar(10) <<PK>>
+    --
+        suffix_code : varchar(2)
+        part_name : varchar(20)
+        + parent_part_no : varchar(10) <<FK>>
+        + supplier_code : varchar(10) <<FK>>
+        dimension_length : int
+        dimension_width : int
+        dimension_height: int
+        weight_per_pc : int
+        qty_per_box : int
+        total_weight : int 
+    -- 
+        time_sec : int
+        procure : varchar(30)
+        material_spec : varchar
+        is_active : boolean
+    }
+
+    Note right
+        Another form of 
+        <b>Part table 
+        but only exist for 
+        Packing purpose
+        maker FK to supplier_code
+    end note
+
+    entity "PackingSpecDpiInfo" as ps_dpi {
+        * part_no : varchar(20) <<PK>> <<FK>>
+        --
+        current_packing_plant_code : varchar (10)
+        next_packing_plant_code : varchar (10)
+        current_vanning_plant_code : varchar (10)
+        next_vanning_plant_code : varchar (10)
+        current_order_pattern : varchar(10)
+        next_order_pattern : varchar(10)
+        category : varchar(10) 'trim/welding
+        katashiki_ad : varchar(5)
+        katashiki_au : varchar(5)
+        katashiki_af : varchar(5)
+        katashiki_ax : varchar(5)
+        importer_line_process : varchar(10)
+        box_number : varchar(5)
+        case_code : varchar(5)
+        renban : varchar(5)
+        renban_eff : byte 
+        boxing : enum (supplier/tmmin)
+        stacking : enum (supplier/tmmin)
+    }
+
+    entity "PackingSpecImages" as psi {
+        * part_no : varchar(20) <<PK>> <<FK>>
+        --
+        part_image_doc_ref : json
+        outer_image_doc_ref : json
+        inner_image_doc_ref : json
+        part_images_caption: varchar
+        outer_images_caption : varchar
+        inner_images_caption : varchar
+    }
+
+}
+
+package SupplierService #DDD {
+    entity "Supplier" as supplier {
+        * code : varchar(10) <<PK>>
+    --
+        name : varchar(25)
+        address : varchar(250)  
+    }
+
+    entity "Plant" as plant {
+        * code : varchar(10) <<PK>>
+    }
+
+    entity "Dock" as dock {
+        * code varchar(10) <<PK>
+    }    
+}
+
+package DocumentService #DDD {
+    entity "Document" as img {
+    }
+}
+
+package UserManagementService #DDD {
+    entity "User" as user {
+        no : varchar(10) <<PK>>
+        name : varchar
+        role_code : varchar <<FK>>
+    }
+
+    entity "Department" as dept {
+        * code : varchar(5) <<PK>>
+        --
+        * name : varchar
+        parent_dept_code : int  
+    }
+
+    dept::parent_dept_code --> dept::codd
+
+    class "Role" as role {
+        +code : varchar(5) <<PK>>
+        --
+        name : varchar
+    }
+
+    entity "DepartmentRole" as dept_role {
+        dept_code <varchar> <<PK>><<FK>>
+        role_code <varchar> <<PK>><<FK>>
+    }
+}
+
+package ApprovalService #DDD {
+    entity "Approval" as approval {
+    }
+}
+
+package NotificationService #DDD {
+    entity "Notification" as notif {
+    }
+}
+
+' Relationships
+ps ||--o| module_type : "enclosed by"
+'ps ||--o{ pm : "consist of"
+'ps ||--o{ img: "has many \npacking step images"
+'ps ||--o{ img: "has many \ninner images"
+ps ||--o| img: "has \nsoftcopy image"
+ps ||--o{ psi: "has packing spec\n image reference"
+ps ||--o{ ps_dpi: "detailed DPI in"
+ps ||--o{ packing_part: has many
+
+user ||--|| dept: "belong to"
+user }o--|| role : "is a"
+user ||--o{ notif: "receive"
+dept_role }o--o{ role: "has many"
+dept_role }o--o{ dept: "has many"
+
+part ||--o{ part : "has subparts"
+part ||--o{ img : "has many"
+part ||--o{ outhouse_price : "has one"
+part ||--o{ inhouse_price : "has one"
+part ||--|{ suffix : has
+part ||--o{ prep_time : "prepared within"
+'pm ||--o{ img: "has many"
+
+approval }o--|| user : "approved by"
+approval }o--|| ps : "for spec"
+approval ||--o{ notif : "  "
+
+supplier ||--o{ part : "produced by"
+supplier ||--|{ plant : "has"
+supplier ||--|{ dock : "has"
+
+model ||--o{ part : "consists of"
+'model ||--o{ ps : "has packing specs"
+model ||--o{ project : "used in"
+
+project }o--|| dept : "belongs to"
+project }o--|| user : "managed"
+project ||--o{ country : "exported to"
+
+rp ||--o{ outhouse_price : "reported at"
+rp ||--o{ inhouse_price : "reported at"
+
+@enduml
+
+/'
+====================
+SAMPLE RECORDS
+====================
+
+---------------------------
+ProductionMaster Service
+---------------------------
+Model
+| code   | name     | generation | created_at         |
+| ------ | -------- | ---------- | ------------------ |
+| GGN155 | Hilux    | 8th Gen    | 2020-03-01 09:00:00 |
+| TGN166 | Fortuner | 2nd Gen    | 2021-05-12 13:30:00 |
+
+Project
+| code      | name             | description          | project_manager | start_date | end_date   | status     |
+| --------- | ---------------- | -------------------- | ----------------| -----------| ---------- | ---------- |
+| PJ-HX2023 | Hilux 2023 TH    | Hilux 2023 Thailand  | 1               | 2022-07-01 | 2023-07-01 | Completed  |
+| PJ-FT2024 | Fortuner 2024 EX | Fortuner 2024 Export | 2               | 2023-01-15 | 2024-01-15 | Active     |
+
+ProjectModel
+| project_code | model_code |
+| ------------ | -----------|
+| PJ-HX2023    | GGN155     |
+| PJ-FT2024    | TGN166     |
+
+Country
+| code | country_name |
+| ---- | -------------|
+| TH   | Thailand     |
+| PH   | Philippines  |
+
+ReportingPeriod
+| year | periodname |
+| ---- | ---------- |
+| 2025 | 03.2025    |
+| 2025 | 08.2025    |
+| 2024 | 08.2024    |
+
+ManHourParams
+| param_id | param_name             | value    |
+| -------- | -----------------------| ---------|
+| MH-001  | takt_time               | 1        |
+| MH-002  | inspection_time         | 0.3125   | 2.5/8
+| MH-003  | delivery_course_time    | 6        |
+| MH-004  | pallet_sorting_time     | 0.3125   | 2.5/8
+| MH-005  | non_pallet_sorting_time | 5.833    | 350/60
+| MH-006  | vanning_time            | 0,595    | 30/(24x2.1)
+| MH-007  | empty_box_return_time   | 5        |
+
+
+
+------------------------------------
+User Management Service
+------------------------------------
+User
+| name         | role_name    |
+| ------------ | ------------ |
+| Aiko Tanaka  | Dept Head    |
+| Budi Santoso | Staff        |
+
+Department
+| name  | full_dept_name                    | parent_dept_id |
+| ----- | --------------------------------- | -------------- |
+| PPM   | Production Part Mgmt              |                |
+| PBOD  | Part Business Operation Division  |                |
+| Proc  | Procurement                       | PBOD           |
+
+Role
+| name         | dept_id |
+| ------------ | --------|
+| Dept Head    | PPM     |
+| Section Head | PPM     |
+| Staff        | Proc    |
+
+DepartmentRole
+| dept_name | role_name    |
+| --------- | ------------ |
+| PPM       | Dept Head    |
+| PPM       | Section Head |
+| Proc      | Staff        |
+
+----------------------------------
+Packing Service
+----------------------------------
+PackingSpec
+| spec_code   | model_code |
+| ----------- | ---------- |
+| PS-GGN155-01| GGN155     |
+| PS-TGN166-01| TGN166     |
+
+----------------------------------
+Part Service
+----------------------------------
+Part
+| part\_no   | suffix\_code | part\_name   | parent\_part\_no | supplier\_code | dimension\_length | dimension\_width | dimension\_height | weight\_per\_pc | qty\_per\_box | total\_weight |
+| ---------- | ------------ | ------------ | ---------------- | -------------- | ----------------- | ---------------- | ----------------- | --------------- | ------------- | ------------- |
+| P001000001 | 01           | Front Bumper | (null)           | SUP-001        | 150               | 40               | 35                | 12              | 5             | 60            |
+| P001000002 | 02           | Rear Bumper  | P001000001       | SUP-002        | 140               | 45               | 30                | 11              | 5             | 55            |
+
+Suffix
+| suffix\_code | note   |
+| ------------ | ------ |
+| 01           | Black  |
+| 02           | Silver |
+
+Inhouse_price
+| part\_no   | periodname | year | msp   | jsp   | local\_outhouse | tooling\_outhouse | raw\_material | labor | foh\_fixed | foh\_var | unfinished\_depre | total\_process\_cost | exclusive\_investment | total\_cost |
+| ---------- | ---------- | ---- | ----- | ----- | --------------- | ----------------- | ------------- | ----- | ---------- | -------- | ----------------- | -------------------- | --------------------- | ----------- |
+| P001000001 | 03.2025    | 2025 | 100.0 | 120.0 | 10.0            | 5.0               | 40.0          | 15.0  | 8.0        | 2.0      | 3.0               | 83.0                 | 7.0                   | 90.0        |
+| P001000002 | 03.2025    | 2025 | 95.0  | 110.0 | 9.0             | 4.0               | 38.0          | 14.0  | 7.0        | 2.0      | 2.5               | 77.5                 | 6.5                   | 84.0        |
+
+Outhouse_price
+| part\_no   | periodname | year | source         | price  |
+| ---------- | ---------- | ---- | -------------- | ------ |
+| P001000001 | 03.2025    | 2025 | Aisin Seiki    | 102.00 |
+| P001000002 | 03.2025    | 2025 | Toyota Boshoku | 98.50  |
+
+'/

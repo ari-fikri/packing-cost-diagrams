@@ -1,0 +1,34 @@
+@startuml
+' Set style
+hide circle
+' skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+
+entity User {
+  * user_id : UUID <<PK>>
+  --
+  username : VARCHAR
+  email : VARCHAR
+}
+
+entity Document {
+  * document_id : UUID <<PK>>
+  --
+  filename : VARCHAR
+    'name in the storage'
+  original_name : VARCHAR
+  url : VARCHAR
+  content_type : VARCHAR 
+    'image/document/MIME/Binary'
+  content_format : VARCHAR 
+    'also mean file extension JPG/jpeg/PNG/PDF/BMP'
+  microservice_source: VARCHAR
+    'Packing_svc/Part_svc/etc'
+  size : INT
+  uploaded_at : TIMESTAMP
+  uploader_id : UUID <<FK>>
+}
+
+User ||--o{ Document : uploads
+@enduml

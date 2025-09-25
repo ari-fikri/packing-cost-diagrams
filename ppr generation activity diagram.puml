@@ -1,0 +1,8 @@
+@startuml
+start
+:create part list template;
+:add parts into template;
+:save template;
+:use template to generate PPR;
+stop
+@enduml

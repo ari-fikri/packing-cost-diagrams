@@ -1,0 +1,73 @@
+@startuml
+|PPMD (Project Lead)|
+start
+:Trigger Packing Spec Change/Creation;
+-> send notif;
+note left
+  Change Packing Type:
+  New Project  ECI -> PCI  PCR -> PSI
+
+  PCI = Packing Change Information
+  PSI = Packing Spec Information
+end note
+
+|Packing Eng. Ser.|
+:Develop CPS Draft;
+:Request CPS Development;
+
+|Suppliers|
+:CPS Development;
+:Submit CPS for Review;
+-> send notif;
+
+|Packing Eng. Ser.|
+:Receive & Review CPS;
+if (Accepted?) then (send notif)
+  :Add more data to CPS;
+  :Approval (PIC -> SH -> DpH);
+  :Submit CPS for completion;
+else (send notif)
+  :Reject;
+  -->|Suppliers| :CPS Development;
+endif
+
+split
+  |Quality|
+  :Receive & Review CPS;
+  if (Accepted?) then (send notif)
+    :Add more data to CPS;
+    :Approval (PIC -> SH -> DpH);
+    :Submit CPS for completion;
+  else (send notif)
+    :Reject;
+    -->|Packing Eng. Ser.| :Receive & Review CPS;
+  endif
+
+split again
+  |Procurement|
+  :Receive & Review CPS;
+  if (Accepted?) then (send notif)
+    :Add more data to CPS;
+    :Approval (PIC -> SH -> DpH);
+    :Submit CPS for completion;
+    :Maintain Packing Indicator (IPPCS);
+  else (send notif)
+    :Reject;
+    -->|Packing Eng. Ser.| :Receive & Review CPS;
+  endif
+endsplit
+
+|Packing Eng. Ser.|
+  :Receive & Review CPS;
+  if (Accepted?) then (send notif)
+    :Store data into DPI document (database);
+  else (send notif)
+    :Reject;
+    -->|Packing Eng. Ser. OR Quality | :Receive & Review CPS;
+  endif
+
+|Packing Eng. Ser.|
+:Store data into DPI document (database);
+
+stop
+@enduml

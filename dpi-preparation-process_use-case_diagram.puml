@@ -1,0 +1,52 @@
+@startuml
+left to right direction
+actor Supplier as supplier
+
+package "Internal TMMIN" {
+  actor PPMD as ppmd
+  actor PES as pes
+  actor Procurement as proc
+  actor Quality as qd
+}
+
+package "DPI System" {
+  usecase "initiate changes" as init
+  usecase  "Develop CPS" as devel
+  usecase "Input CPS data" as cps1
+  usecase "Update DPI data" as dpi1
+}
+
+package "External services" {
+  usecase "Authentication serivce" as auth
+  usecase "IPPCS" as ippcs
+  usecase "Notification service" as notif
+}
+
+usecase GPAC as gpac
+
+supplier --> init
+supplier --> cps1
+
+ppmd --> init
+ppmd --> dpi1
+
+pes --> devel
+proc --> dpi1
+qd --> dpi1
+
+ippcs --> init : part and model
+ippcs --|> devel
+
+init <-- auth :<<include>>
+cps1 <-- auth :<<include>>
+dpi1 <-- auth :<<include>>
+devel <-- auth :<<include>>
+
+init <|--|> notif
+cps1 <|--|> notif
+dpi1 <|--|> notif
+devel <|--|> notif
+
+pes --> gpac
+
+@enduml

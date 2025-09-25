@@ -1,0 +1,39 @@
+@startuml
+' Use spring layout for freeform/mindmap style layout spring
+
+' Define main case
+[CPS Form Cases] --> [New Blank CPS]
+[CPS Form Cases] --> [PCI]
+[CPS Form Cases] --> [PSI]
+[New Blank CPS] --> [Copy CPS from existing CPS]
+
+[New Blank CPS] --> [Use New PJT/CFC Code] 
+'[PCI] --> [Refer to existing CPS]
+[PSI] --> [Refer to existing CPS]
+[Refer to existing CPS] --> [Use New Inner Packs]
+[Refer to existing CPS] --> [Use Prev Inner Packs]
+
+' Branch: Use existing PJT/CFC Code
+[Copy CPS from existing CPS] --> [Use existing PJT/CFC Code]
+
+[Use existing PJT/CFC Code] --> [Use previous Model from prev CFC/PJT]
+[Use previous Model from prev CFC/PJT] --> [Use Prev Part No]
+[Use previous Model from prev CFC/PJT] --> [Use New Part No]
+
+' Branch from Prev Part No
+[Use Prev Part No] --> [Use Prev Module Type]
+[Use Prev Part No] --> [Use New Module Type]
+[Use New Module Type] --> [Use Prev Inner Packs]
+[Use New Module Type] --> [Use New Inner Packs]
+
+' Branch: Use New Model under existing PJT
+[Use existing PJT/CFC Code] --> [Use New Model]
+[Use New Model] --> [Use Prev Part No]
+[Use New Model] --> [Use New Part No]
+
+' Branch: Replace PJT/CFC Code
+[Copy CPS from existing CPS] --> [Use New PJT/CFC Code]
+[Use New PJT/CFC Code] --> [Use New Model]
+[Use New Model] --> [Use New Part No]
+
+@enduml

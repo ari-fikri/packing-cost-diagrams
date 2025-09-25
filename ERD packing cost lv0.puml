@@ -1,0 +1,67 @@
+@startuml
+
+entity "Project" as project {
+}
+
+entity "Model" as model {
+}
+
+entity "Part" as part {
+}
+
+entity "PackingSpec" as ps {
+}
+
+entity "PackingMaterial" as pm {
+}
+
+entity "Supplier" as supplier {
+}
+
+entity "Image" as img {
+}
+
+entity "User" as user {
+}
+
+entity "Department" as dept {
+}
+
+entity "Role" as role {
+}
+
+entity "Approval" as approval {
+}
+
+entity "Notification" as notif {
+
+}
+
+' Relationships
+ps ||--o| part : "has one"
+ps ||--o{ pm : "consist of"
+ps ||--o{ img: "has many \npacking step images"
+ps ||--o{ img: "has many \ninner images"
+ps ||--o| img: "has \nsoft copy image"
+
+user ||--|| dept: "belong to"
+user }o--|| role : "is a"
+user ||--o{ notif: "receive"
+
+part ||--o{ part : "has subparts"
+part ||--o{ img : "has many"
+supplier ||--o{ part : "produce"
+pm ||--o{ img: "has many"
+
+approval }o--|| user : "approved by"
+approval }o--|| ps : "for spec"
+approval ||--o{ notif : "create"
+
+project ||--o{ model : "has many"
+model ||--o{ part : "consist"
+project||--o| country : "export to"
+
+project }o--|| dept : "belongs to"
+project }o--|| user : "PIC"
+
+@enduml

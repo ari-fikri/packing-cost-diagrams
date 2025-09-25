@@ -1,0 +1,99 @@
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity "Notification" as notif {
+  + id : UUID
+  --
+  title : string
+  body : text
+  type : string
+  priority : enum [Low, Normal, High]
+  target_type : string
+  target_id : string
+  created_at : datetime
+}
+
+entity "NotificationTemplate" as tmpl {
+  + id : UUID
+  --
+  type : string
+  channel : string
+  subject_template : text
+  body_template : text
+}
+
+entity "NotificationChannel" as channel {
+  + id : UUID
+  --
+  name : string
+  type : enum [Email, SMS, Push, InApp]
+  config : json
+}
+
+entity "NotificationDispatch" as dispatch {
+  + id : UUID
+  --
+  notification_id : UUID
+  channel_id : UUID
+  recipient : string
+  status : enum [Pending, Sent, Failed]
+  attempts : int
+  last_attempt_at : datetime
+}
+
+entity "User" as user {
+  + id : UUID
+  --
+  name : string
+  email : string
+  phone : string
+}
+
+' Relationships
+notif ||--o{ dispatch : "has many"
+dispatch }o--|| channel : "via"
+notif }o--|| tmpl : "based on"
+dispatch }o--|| user : "recipient"
+
+@enduml
+
+/'
+=======================
+Sample Records
+=======================
+
+Notification
+| id          | title             | body                            | type       | priority | target\_type | target\_id | created\_at          |
+| ----------- | ----------------- | ------------------------------- | ---------- | -------- | ------------ | ---------- | -------------------- |
+| `notif-001` | "Approval Needed" | "Your approval is requested..." | `Approval` | High     | `Approval`   | `appr-123` | 2025-07-17T10:23:00Z |
+
+
+NotificationTemplate
+| id         | type       | channel | subject\_template             | body\_template                            |
+| ---------- | ---------- | ------- | ----------------------------- | ----------------------------------------- |
+| `tmpl-001` | `Approval` | Email   | "Approval Request: {{title}}" | "Hi {{name}}, you have a pending request" |
+| `tmpl-002` | `Approval` | InApp   | ""                            | "You have a pending approval."            |
+
+
+NotificationChannel
+| id         | name      | type  | config                                |
+| ---------- | --------- | ----- | ------------------------------------- |
+| `chan-001` | EmailSMTP | Email | `{ "smtp_host": "smtp.example.com" }` |
+| `chan-002` | InApp     | InApp | `{}`                                  |
+
+
+NotificationDispatch
+| id         | notification\_id | channel\_id | recipient          | status  | attempts | last\_attempt\_at    |
+| ---------- | ---------------- | ----------- | ------------------ | ------- | -------- | -------------------- |
+| `disp-001` | `notif-001`      | `chan-001`  | `john@example.com` | Sent    | 1        | 2025-07-17T10:25:00Z |
+| `disp-002` | `notif-001`      | `chan-002`  | `user-101`         | Pending | 0        | NULL                 |
+
+
+User
+| id       | name      | email                                       | phone         |
+| -------- | --------- | ------------------------------------------- | ------------- |
+| user-101 | John Wick | [john@example.com](mailto:john@example.com) | +621234567890 |
+
+'/

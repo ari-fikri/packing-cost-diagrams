@@ -1,0 +1,101 @@
+@startuml
+' Set style
+hide circle
+' skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+entity "ApprovalRequest" as request {
+  + id : UUID
+  --
+  target_type : string
+  target_id : UUID
+  status : enum
+  created_at : datetime
+}
+
+entity "ApprovalStep" as step {
+  + id : UUID
+  --
+  request_id : UUID
+  sequence : int
+  role_required : string
+  status : enum
+}
+
+entity "ApprovalAction" as action {
+  + id : UUID
+  --
+  step_id : UUID
+  user_id : UUID
+  action : enum
+  comment : text
+  action_date : datetime
+}
+
+entity "User" as user {
+  + id : UUID
+  --
+  name : string
+  role : string
+}
+
+entity "PackingSpec" as ps {
+  + id : UUID
+  --
+  description : string
+}
+
+entity "Project" as proj {
+  + id : UUID
+  --
+  name : string
+  owner : string
+}
+
+
+' Relationships
+request ||--o{ step : has
+step ||--o{ action : has
+user ||--o{ action : performs
+request ||--o{ step : has many
+request }o--|| user : "requested by"
+
+' Optional (informative): show relation between target_id and types
+request }|..|| ps : "if target_type = 'PackingSpec'\nthen target_id = ps.id"
+request }|..|| proj : "if target_type = 'Project'\nthen target_id = proj.id"
+
+@enduml
+
+
+/' 
+=====================================
+SAMPLE Records to illustrate further
+=====================================
+
+ApprovalRequest
+| id (UUID) | target\_type  | target\_id (UUID) | status     | created\_at         |
+| --------- | ------------- | ----------------- | ---------- | ------------------- |
+| `req-001` | `PackingSpec` | `ps-789`          | `Approved` | 2025-07-17 09:00:00 |
+
+
+ApprovalSteps
+| id       | request\_id | sequence | role\_required | status   |
+| -------- | ----------- | -------- | -------------- | -------- |
+| step-001 | req-001     | 1        | `PIC`          | Approved |
+| step-002 | req-001     | 2        | `Section Head` | Approved |
+| step-003 | req-001     | 3        | `Dept Head`    | Approved |
+
+ApprovalActions
+| id      | step\_id | user\_id | action  | comment            | action\_date        |
+| ------- | -------- | -------- | ------- | ------------------ | ------------------- |
+| act-101 | step-001 | user-01  | Approve | "Looks good."      | 2025-07-17 09:05:00 |
+| act-102 | step-002 | user-02  | Approve | "Reviewed and OK." | 2025-07-17 10:00:00 |
+| act-103 | step-003 | user-03  | Approve | "Final approval."  | 2025-07-17 11:00:00 |
+
+User
+| id      | name    | role         |
+| ------- | ------- | ------------ |
+| user-01 | Alice   | PIC          |
+| user-02 | Boby     | Section Head |
+| user-03 | Charlie | Dept Head    |
+'/

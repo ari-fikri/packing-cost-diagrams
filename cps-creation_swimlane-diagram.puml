@@ -1,0 +1,74 @@
+@startuml
+' -- User Actors --
+actor       "PPM \nDept"         as ppmd
+actor       "Packing Eng \nSer"  as pse
+actor       Supplier             as supplier
+actor       "Quality \nDept"     as qd
+actor       "Procurement \nDept" as pd
+
+' -- Boundaries --
+boundary    "CPS Form"           as cps_form
+
+' -- Logic --
+control "Approval Logic" as approval_logic
+
+' -- Data Stores --
+database    DPI                  as dpi
+database    "User DB"            as user_db
+database    "CPS"                as cps_db
+database    "Notif"              as notif_db
+database    GPAC                 as gpac
+
+' -- External Files --
+collections "XLS \nfiles"        as xls_files
+
+ppmd -> cps_form        : Change CPS data
+cps_form -> cps_db      : update_CPS()
+cps_db -> notif_db      : create request notif
+notif_db -> pse         : send request notif
+
+pse -> approval_logic : request review()
+approval_logic -> user_db : getUserRole()
+approval_logic -> cps_db : getCPSStatus()
+alt [accepted]
+  approval_logic -> notif_db : create approval notif
+  notif_db -> qd : send approval request
+else [rejected]
+  approval_logic -> notif_db : create reject notif
+  notif_db -> supplier : send rejection
+end
+
+supplier -> cps_form    : Update CPS data
+cps_form -> cps_db      : update_CPS()
+cps_db -> notif_db      : create request notif
+notif_db -> pse         : send request notif
+
+alt #c1f5df [accepted]
+  pse -> notif_db       : create review request notif
+  notif_db -> qd        : send review request notif
+else #fabdb9 [rejected]
+  pse -> notif_db       : create reject notif
+  notif_db -> supplier  : send reject notif
+end
+
+qd -> qd                : review
+alt #c1f5df [accepted]
+  qd -> notif_db        : create review request notif
+  notif_db -> pd        : send review request notif
+else #fabdb9 [rejected]
+  qd -> notif_db        : create reject notif
+  notif_db -> qd        : send reject notif
+end
+
+pd -> pd : review
+activate pd
+pd -> dpi : save as DPI
+deactivate pd
+pd -> pd : calculate costs
+pd <-> xls_files : lookup reference .XLS files
+pd -> GPAC : input into GPAC
+
+
+
+
+@enduml

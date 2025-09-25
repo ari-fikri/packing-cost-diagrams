@@ -1,0 +1,73 @@
+@startuml
+title CKD CPS System Architecture
+
+actor "PPMD PIC" as ppmd
+actor "PES PIC" as pes
+actor "Supplier" as supplier
+actor "Quality Dept" as qd
+actor "Procurement Dept" as pd
+
+package "User Interfaces" {
+  [CPS Form] <<boundary>>
+  [Approval Interface] <<boundary>>
+  [Cost Entry UI] <<boundary>>
+  [Part Entry UI] <<boundary>>
+}
+
+package "Application Logic" {
+  [ChangeRequestHandler] <<control>>
+  [ApprovalLogic] <<control>>
+  [NotificationManager] <<control>>
+  [CostCalculationLogic] <<control>>
+  [PartManagementService] <<control>>
+}
+
+package "Data Layer" {
+  database "CPS DB" as cps_db
+  database "User DB" as user_db
+  database "DPI DB" as dpi_db
+  database "Notification DB" as notif_db
+  database "Parts DB" as part_db
+}
+
+package "External Systems" {
+  database "GPAC System" as gpac
+  collections "XLS Files" as xls_files
+}
+
+' User Interactions
+ppmd --> [CPS Form]
+pes --> [CPS Form]
+supplier --> [CPS Form]
+qd --> [Approval Interface]
+pd --> [Approval Interface]
+pes --> [Approval Interface]
+ppmd --> [Approval Interface]
+pd --> [Cost Entry UI]
+pd --> [Part Entry UI]
+
+' UI to Logic
+[CPS Form] --> [ChangeRequestHandler]
+[CPS Form] --> [ApprovalLogic]
+[Approval Interface] --> [ApprovalLogic]
+[Cost Entry UI] --> [CostCalculationLogic]
+[Part Entry UI] --> [PartManagementService]
+
+' Logic to Data
+[ChangeRequestHandler] --> cps_db
+[ChangeRequestHandler] --> notif_db
+
+[ApprovalLogic] --> cps_db
+[ApprovalLogic] --> notif_db
+[ApprovalLogic] --> user_db
+[PartManagementService] --> part_db
+
+[NotificationManager] --> notif_db
+
+[CostCalculationLogic] --> dpi_db
+[CostCalculationLogic] --> xls_files
+[CostCalculationLogic] --> gpac
+
+
+@enduml
+
