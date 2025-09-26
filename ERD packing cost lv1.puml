@@ -3,8 +3,8 @@ hide circle
 skinparam classAttributeIconSize 0
 
 package ProductionMasterService #DDD {
-    entity "Project" as project {
-        code : varchar(12) <<PK>>
+    entity "Project (CFC/PJT)" as project {
+        cfc_pjt_code : varchar(12) <<PK>>
     --
         name : varchar(64)
         description : text
@@ -16,19 +16,37 @@ package ProductionMasterService #DDD {
     }
 
     entity "ProjectModel" as project_model #DDD {
-        * project_code : varchar(12) <<PK>><<FK>>
+        * cfc_pjt_code : varchar(12) <<PK>><<FK>>
         * model_code : varchar <<PK>><<FK>>
     }
 
     entity "Model" as model {
-        code : varchar <<PK>>
+        model_code : varchar <<PK>>
     --
         name : varchar
         remark : varchar
     }
 
+    entity "Currency" as currency {
+      currency_code : char (3) <<PK>>
+    --
+      name : varchar
+      country_code : char (4) <<FK>>
+    }
+
+    entity "exchange_rate" as exc_rate {
+      exc_rate_code : char(7)
+      start_periode : timestamp
+      end_periode : timestamp
+      currency_code_source: char(3) <<FK>>
+      currency_code_target : char(3) <<FK>>
+      rate : numeric (15,2)
+    }
+
+    exc_rate ||--|{ currency
+
     entity "ModuleType" as module_type {
-        code : varchar <<PK>>
+        module_typecode : varchar <<PK>>
     --
         item_no : varchar <<FK>>
         dimension_width : int
@@ -40,16 +58,20 @@ package ProductionMasterService #DDD {
         dimension_outer_width : numeric (3,2)
         dimension_outer_length : numeric (3,2)
         dimension_outer_height : numeric (3,2)
+        price : numeric (15,2)
+        currency_code : char(3) <<FK>>
     }
 
+    module_type ||--|{  currency
+
     entity "Country" as country {
-        code : char (4) <<PK>>
+        country_code : char (4) <<PK>>
     --
         country_name : varchar
     }
 
     entity "ReportingPeriod" as rp {
-        code : varchar(8) <<PK>>
+        reporting_period_code : varchar(8) <<PK>>
         * periodname : varchar (20)
         * year : int
     }
@@ -141,7 +163,27 @@ package PackingService #DDD {
         * model_code : varchar  <<FK>>
         issued_date : timestamp
         effective_date : timestamp
+        cfc_pjt_code : varchar (15)
+        model_code : varchar
     }
+    
+    entity "DPI" as dpi {
+      * dpi_no : varchar <<PK>>
+      ref_dpi_no : varchar (15)
+      cfc_pjt_code : varchar (15)
+      model_code : varchar (15)
+    }
+
+    entity "DPI Parts" as dpi_parts {
+      * dpi_parts_id : int <<PK>>
+      --
+      dpi_no : varchar (15) <<FK>>
+      part_no : varchar (10) <<FK>>
+    }
+    
+    dpi ||--|{ dpi_parts
+    dpi_parts ||--|{ part
+
    /'
     entity "Part" as part {
         * part_no : varchar(10)
@@ -215,7 +257,7 @@ package PackingService #DDD {
     }
 
     entity "PackingSpecImages" as psi {
-        * part_no : varchar(20) <<PK>> <<FK>>
+        * spec_code : varchar(20) <<PK>> <<FK>>
         --
         part_image_doc_ref : json
         outer_image_doc_ref : json
@@ -287,6 +329,44 @@ package NotificationService #DDD {
     }
 }
 
+package PackingSpecImagesService #DDD {
+    entity "QKP Image" as qkp_image {
+        * qkp_image_id : varchar(20) <<PK>>
+        spec_code : varchar(20) <<FK>>
+        --
+        doc_id : varchar
+    } 
+
+    entity "BKP Image" as bkp_image {
+        * bkp_image_id : varchar(20) <<
+        spec_code : varchar(20) <<FK>>
+        --
+        doc_id : varchar
+    } 
+
+        entity "Packing Image" as packing_image {
+        * packing_image_id : varchar(20) <<
+        spec_code : varchar(20) <<FK>>
+        --
+        doc_id : varchar
+    } 
+
+    entity "Part Image " as part_image {
+        * part_image_id : varchar(20) <<
+        spec_code : varchar(20) <<FK>>
+        --
+        doc_id : varchar
+    }
+
+    entity "Outer Image " as outer_image {
+        * part_image_id : varchar(20) <<
+        spec_code : varchar(20) <<FK>>
+        --
+        doc_id : varchar
+    }
+
+}
+
 ' Relationships
 ps ||--o| module_type : "enclosed by"
 'ps ||--o{ pm : "consist of"
@@ -296,6 +376,11 @@ ps ||--o| img: "has \nsoftcopy image"
 ps ||--o{ psi: "has packing spec\n image reference"
 ps ||--o{ ps_dpi: "detailed DPI in"
 ps ||--o{ packing_part: has many
+ps ||--o{ qkp_image : "has many"
+ps ||--o{ bkp_image : "has many"
+ps ||--o{ part_image : "has many"
+ps ||--o{ packing_image : "has many"
+ps ||--o{ outer_image : "has many"
 
 user ||--|| dept: "belong to"
 user }o--|| role : "is a"
@@ -326,10 +411,16 @@ model ||--o{ project : "used in"
 project }o--|| dept : "belongs to"
 project }o--|| user : "managed"
 project ||--o{ country : "exported to"
+project ||--|| dpi : "parts and packaging detailed in"
 
 rp ||--o{ outhouse_price : "reported at"
 rp ||--o{ inhouse_price : "reported at"
 
+img ||--|| qkp_image
+img ||--|| bkp_image
+img ||--|| part_image
+img ||--|| packing_image
+img ||--|| outer_image
 @enduml
 
 /'
