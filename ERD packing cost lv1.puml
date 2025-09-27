@@ -46,7 +46,7 @@ package ProductionMasterService #DDD {
     exc_rate ||--|{ currency
 
     entity "ModuleType" as module_type {
-        module_typecode : varchar <<PK>>
+        module_type_code : varchar <<PK>>
     --
         item_no : varchar <<FK>>
         dimension_width : int
@@ -71,7 +71,7 @@ package ProductionMasterService #DDD {
     }
 
     entity "ReportingPeriod" as rp {
-        reporting_period_code : varchar(8) <<PK>>
+        reporting_periode_code : varchar(8) <<PK>>
         * periodname : varchar (20)
         * year : int
     }

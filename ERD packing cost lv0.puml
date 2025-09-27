@@ -12,7 +12,10 @@ entity "Part" as part {
 entity "PackingSpec" as ps {
 }
 
-entity "PackingMaterial" as pm {
+entity "PackingMaterialInner" as pm_inner {
+}
+
+entity "PackingMaterialOutter" as pm_outer {
 }
 
 entity "Supplier" as supplier {
@@ -39,9 +42,12 @@ entity "Notification" as notif {
 
 ' Relationships
 ps ||--o| part : "has one"
-ps ||--o{ pm : "consist of"
+ps ||--o{ pm_inner : "consist of"
+ps ||--o{ pm_outer : "consist of"
 ps ||--o{ img: "has many \npacking step images"
 ps ||--o{ img: "has many \ninner images"
+ps ||--o{ img: "has many \nqkp images"
+ps ||--o{ img: "has many \nqkp images"
 ps ||--o| img: "has \nsoft copy image"
 
 user ||--|| dept: "belong to"
@@ -51,7 +57,7 @@ user ||--o{ notif: "receive"
 part ||--o{ part : "has subparts"
 part ||--o{ img : "has many"
 supplier ||--o{ part : "produce"
-pm ||--o{ img: "has many"
+'pm ||--o{ img: "has many"
 
 approval }o--|| user : "approved by"
 approval }o--|| ps : "for spec"

@@ -1,0 +1,40 @@
+@startuml
+[*] --> Draft : PCD initially create DPI
+[*] --> Submitted : PCD submit DPI to PSE right away
+Draft --> Submitted : Sent to other dept
+Draft --> Deleted
+Submitted --> Accepted : DPI received
+Submitted --> Deleted : DPI deleted
+Accepted --> Rejected : Criteria not complete
+Rejected --> Submitted : Sent back to sender department
+Accepted --> Approved : Criteria completed in this department
+Approved --> Submitted : Sent to other department
+Approved --> Completed : if all assigned department has approved
+Completed -> [*]
+Deleted --> [*]
+
+state Draft {
+ Draft: - PCD Created DPI locally \n- NOT yet sent to PSE
+}
+state Submitted {
+ Submitted:Waiting for PSE to review
+}
+
+state Accepted {
+ Accepted:PSE has accepted the DPI
+}
+
+state Approved {
+ Approved: PSE approved DPI to be developed
+}
+
+state Rejected {
+ Rejected: PSE rejected the DPI and sent back to PCD
+}
+
+state Completed {
+ Completed: - DPI process is completed \n- all Parts has been assigned with CPS
+}
+
+@enduml
+
