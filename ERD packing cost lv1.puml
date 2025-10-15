@@ -1,426 +1,346 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
-package ProductionMasterService #DDD {
-    entity "Project (CFC/PJT)" as project {
-        cfc_pjt_code : varchar(12) <<PK>>
-    --
-        name : varchar(64)
-        description : text
-        manager : int <<FK>>
-        start_date : date
-        end_date : date
-        status : enum (Draft, Active, On Hold, Completed)
-        note: varchar
-    }
-
-    entity "ProjectModel" as project_model #DDD {
-        * cfc_pjt_code : varchar(12) <<PK>><<FK>>
-        * model_code : varchar <<PK>><<FK>>
-    }
-
-    entity "Model" as model {
-        model_code : varchar <<PK>>
-    --
-        name : varchar
-        remark : varchar
-    }
+package "Master Data" as master_domain #DDD {
 
     entity "Currency" as currency {
-      currency_code : char (3) <<PK>>
-    --
-      name : varchar
-      country_code : char (4) <<FK>>
+        currency_code : char(3) <<PK>>
+        --
+        name : varchar(25) NOT NULL
+        country_code : char(4) NOT NULL <<FK>>
     }
 
-    entity "exchange_rate" as exc_rate {
-      exc_rate_code : char(7)
-      start_periode : timestamp
-      end_periode : timestamp
-      currency_code_source: char(3) <<FK>>
-      currency_code_target : char(3) <<FK>>
-      rate : numeric (15,2)
+    entity "ExchangeRate" as exc_rate {
+        exc_rate_code : char(18) <<PK>>
+        --
+        start_periode : timestamp
+        end_periode : timestamp
+        currency_code_source : char(3) <<FK>>
+        currency_code_target : char(3) <<FK>>
+        rate : numeric(15,2)
     }
 
     exc_rate ||--|{ currency
 
-    entity "ModuleType" as module_type {
-        module_type_code : varchar <<PK>>
-    --
-        item_no : varchar <<FK>>
-        dimension_width : int
-        dimension_height : int
-        dimension_length : int
-        dimension_inner_width : numeric (3,2)
-        dimension_inner_length : numeric (3,2)
-        dimension_inner_height : numeric (3,2)
-        dimension_outer_width : numeric (3,2)
-        dimension_outer_length : numeric (3,2)
-        dimension_outer_height : numeric (3,2)
-        price : numeric (15,2)
-        currency_code : char(3) <<FK>>
-    }
-
-    module_type ||--|{  currency
-
     entity "Country" as country {
-        country_code : char (4) <<PK>>
-    --
-        country_name : varchar
+        country_code : char(4) <<PK>>
+        three_digits_country_code : char(3) <<PK>>
+        --
+        country_name : varchar(100) NOT NULL
     }
 
     entity "ReportingPeriod" as rp {
-        reporting_periode_code : varchar(8) <<PK>>
-        * periodname : varchar (20)
-        * year : int
+        reporting_periode_code : char(6) <<PK>>
+        --
     }
 
-    entity "ManHourParams" as man_hour_params {
-        * param_id : varchar(10) <<PK>><<FK>>
-        * param_name : varchar(20) <<PK>><<FK>>
-        * value : float;
+    entity "MasterParam" as mp {
+        reporting_periode_code : varchar(6) <<PK>> <<FK>>
+        --
+        param_name : varchar(50) NOT NULL
+        param_type : smallint NOT NULL <<ENUM: 0:manhour|1:inland|3:labor>>
+        value : numeric(15,2) NOT NULL
     }
 
-    entity "rate" as rate {
-      periodname : varchar(20) <<PK>><<FK>>
-      direct_labor_rate : numeric (10, 2)
-      indirect_labor_rate : numeric (10, 2)
-      facility_rate : numeric (10, 2)
-      labor_rate : numeric (10, 2)
-      container_40_rate : numeric (10, 2)
-      container_20_rate : numeric (10, 2)
-      milkrun_efficiency_percentage : numeric (3, 2)
+    'package SupplierDomain #DDD {
+    entity "Supplier" as supplier {
+        supplier_code : char(6) <<PK>>
+        --
+        name : varchar(255) NOT NULL
+        address : varchar(255) NULLABLE
     }
+
+    entity "Plant" as plant {
+        plant_code : varchar(10) <<PK>>
+        --
+    }
+
+    entity "Dock" as dock {
+        dock_code : varchar(10) <<PK>>
+        --
+    }
+    
+    rp ||--o{ mp : has many
 
 }
 
-package PartService #DDD {
-    entity "Part" as part {
-        * part_no : varchar(10)
-    --
-        suffix_code : varchar(2)
-        part_name : varchar(20)
-        + parent_part_no : varchar(10) (FK)
-        + supplier_code : varchar(10) (FK)
-        dimension_length : int
-        dimension_width : int
-        dimension_height: int
-        weight_per_pc : int
-        qty_per_box : int
-        total_weight : int 
+package "Packing Spec" as ps_domain #DDD {
+
+    entity "Project" as project {
+        project_code : char(6) <<PK>>
+        --
+        name : varchar(64) NULLABLE
+        description : varchar(256) NULLABLE
+        manager : varchar(10) NULLABLE <<FK>>
+        implementation_period : varchar(6) NOT NULL
+        status : tinyint NOT NULL <<ENUM: 0:Draft|1:Active|2:OnHold|3:Completed>> <<DEFAULT 1>>
+        note : varchar(1000) NULLABLE
     }
 
-    entity "Preparation Time" as prep_time {
-        * part_no : varchar(10)
+    entity "Model" as model {
+        model_code : char(6) <<PK>>
+        --
+        name : varchar(100) NULLABLE
+        remark : varchar(255) NULLABLE
+        country_code : char(4) NOT NULL <<FK>>
+        project_code : char(6) NOT NULL <<FK>>
+    }
+
+    entity "Part" as part {
+        part_no : varchar(10) <<PK>>
+        --
+        suffix_code : varchar(2) NOT NULL <<FK>>
+        part_name : varchar(255) NOT NULL
+        parent_part_no : varchar(10) NULLABLE <<FK>>
+        supplier_code : varchar(10) NULLABLE <<FK>>
+        dimension_length : int
+        dimension_width : int
+        dimension_height : int
+        weight_per_pc : int
+        qty_per_box : int
+        total_weight : int
+    }
+
+    entity "PreparationTime" as prep_time {
+        part_no : varchar(10) <<PK>> <<FK>>
         --
         boxing : int
         stacking : int
     }
-    
 
-    entity "PartType" as part_type {
-      * part_no: varchar (10)
-      type :enum (inner, outer, part)
+    entity "Suffix" as suffix {
+        suffix_code : varchar(2) <<PK>>
+        --
+        note : varchar(10)
     }
 
-    entity "suffix" as suffix {
-        * suffix_code : varchar(2)
-    --
-        note : varchar (10)
-    }    
-
-    entity "inhouse_price" as inhouse_price {
-        * part_no : varchar(10) <<PK>><<FK>>
-        * periodname : varchar(20) <<PK>><<FK>>
-        msp : numeric (10, 2) 
-        jsp : numeric (10, 2)
-        local_outhouse : numeric (10, 2)
-        tooling_outhouse : numeric (10, 2)
-        raw_material : numeric (10, 2)
-        labor : numeric (10, 2)
-        foh_fixed : numeric (10, 2)
-        foh_var : numeric (10, 2)
-        unfinished_depre : numeric (10, 2)
-        total_process_cost : numeric (10, 2)
-        exclusive_investment : numeric (10, 2)
-        total_cost : numeric (10, 2)
-    }
-
-    entity "outhouse_price" as outhouse_price {
-        * part_no : varchar(10) <<PK>><<FK>>
-        * periodname : varchar(20) <<PK>><<FK>>
-        source : varchar
-        price : numeric(10, 2)
-    }
-}
-
-package PackingService #DDD {
-    entity "PackingSpec" as ps {
-        * spec_code : varchar <<PK>>
-    --
-        spec_code_ref : varchar <<FK>>
-        * model_code : varchar  <<FK>>
-        issued_date : timestamp
-        effective_date : timestamp
-        cfc_pjt_code : varchar (15)
-        model_code : varchar
+    entity "PackingSpec" as cps {
+        cps_id : int <<PK>> <<AUTO_INCREMENT>>
+        cps_code : varchar(34)
+        --
+        cps_code_ref : varchar(28) NULLABLE <<FK>>
+        model_code : varchar(6) NOT NULL <<FK>>
+        part_no : varchar(12) NOT NULL
+        is_active : boolean NOT NULL <<DEFAULT true>>
+        cps_type : tinyint NOT NULL <<DEFAULT 0>>
     }
     
-    entity "DPI" as dpi {
-      * dpi_no : varchar <<PK>>
-      ref_dpi_no : varchar (15)
-      cfc_pjt_code : varchar (15)
-      model_code : varchar (15)
-    }
-
-    entity "DPI Parts" as dpi_parts {
-      * dpi_parts_id : int <<PK>>
-      --
-      dpi_no : varchar (15) <<FK>>
-      part_no : varchar (10) <<FK>>
-    }
-    
-    dpi ||--|{ dpi_parts
-    dpi_parts ||--|{ part
-
-   /'
-    entity "Part" as part {
-        * part_no : varchar(10)
-    --
-        suffix_code : varchar(2)
-        part_name : varchar(20)
-        + parent_part_no : varchar(10) (FK)
-        + supplier_code : varchar(10) (FK)
-        dimension_length : int
-        dimension_width : int
-        dimension_height: int
-        weight_per_pc : int
-        qty_per_box : int
-        total_weight : int 
-    }
-    '/
-    entity "PackingSpecPackingMaterial" as pspm {
-        spec_code : varchar
-
-    }
-
-    entity "PackingMaterialPart" as packing_part {
-        * part_no : varchar(10) <<PK>>
-    --
-        suffix_code : varchar(2)
-        part_name : varchar(20)
-        + parent_part_no : varchar(10) <<FK>>
-        + supplier_code : varchar(10) <<FK>>
-        dimension_length : int
-        dimension_width : int
-        dimension_height: int
-        weight_per_pc : int
-        qty_per_box : int
-        total_weight : int 
-    -- 
-        time_sec : int
-        procure : varchar(30)
-        material_spec : varchar
-        is_active : boolean
-    }
-
-    Note right
-        Another form of 
-        <b>Part table 
-        but only exist for 
-        Packing purpose
-        maker FK to supplier_code
+    note top of cps
+        composite cps_code = 
+          cps_type of tyoe( <<enum 0:CPS, 1:ECI, 2:PSI>>)
+          cps_code generated from : dest,
+          model, part_no, reporting_period
     end note
-
-    entity "PackingSpecDpiInfo" as ps_dpi {
-        * part_no : varchar(20) <<PK>> <<FK>>
+    
+    entity "PackingSpecDetail" as cps_dtl {
+        cps_id : int <<FK>>
+        cps_code : varchar(28) <<FK>>
+        packing_material_price_code : varchar(12) <<FK>>
         --
-        current_packing_plant_code : varchar (10)
-        next_packing_plant_code : varchar (10)
-        current_vanning_plant_code : varchar (10)
-        next_vanning_plant_code : varchar (10)
-        current_order_pattern : varchar(10)
-        next_order_pattern : varchar(10)
-        category : varchar(10) 'trim/welding
-        katashiki_ad : varchar(5)
-        katashiki_au : varchar(5)
-        katashiki_af : varchar(5)
-        katashiki_ax : varchar(5)
-        importer_line_process : varchar(10)
-        box_number : varchar(5)
-        case_code : varchar(5)
-        renban : varchar(5)
-        renban_eff : byte 
-        boxing : enum (supplier/tmmin)
-        stacking : enum (supplier/tmmin)
+        qty : numeric(5,2) NOT NULL <<DEFAULT 1>>
+    }
+    
+    entity "PackingSpecPseDtl" as cps_pse_dtl {
+        cps_id : int <<PK>> <<AUTO_INCREMENT>>
+        --
+        cps_code : varchar(28) NOT NULL <<FK>>
+        packing_plant_current : varchar(6) NULLABLE
+        packing_plant_next : varchar(6) NULLABLE
+        vanning_plant_current : varchar(6) NULLABLE
+        vanning_plant_next : varchar(6) NULLABLE
+        category : tinyint NULLABLE 
+        importer_line_process : tinyint NULLABLE
+        case_code : varchar(4) NULLABLE
+        box_number : varchar(1000) NULLABLE
+        renban : char(2) NULLABLE
+        packing_line : varchar(4) NULLABLE
+        packing_process_boxing : tinyint NULLABLE
+        packing_process_stacking : tinyint NULLABLE
     }
 
-    entity "PackingSpecImages" as psi {
-        * spec_code : varchar(20) <<PK>> <<FK>>
+    note top of cps_pse_dtl
+      category and packing line of type 
+        <<ENUM: 0:trim|1:welding|2:hardware|3:finish>>
+      packing_process_boxing and packing_process_stackin of type 
+        <<ENUM: 1:TMMIN | 2:supplier>>
+    end note
+    
+    entity "PackingSpecLogisticDtl" as cps_logistic_dtl {
+        cps_code : varchar(28) <<PK>> <<FK>>
         --
-        part_image_doc_ref : json
-        outer_image_doc_ref : json
-        inner_image_doc_ref : json
-        part_images_caption: varchar
-        outer_images_caption : varchar
-        inner_images_caption : varchar
+        dock_code :varchar(20) NULLABLE <<FK>>
+        remark :varchar(1000) NULLABLE <<FK>>
+        process_type : char(2) NULLABLE
+        address_rack : varchar (20) NULLABLE
     }
+
+    cps ||--o| cps_logistic_dtl : has logistic info detailed
+        
+    entity "PackingMaterialPrice" as material_price {
+        packing_material_price_code : varchar(12) <<PK>>
+        --
+        reporting_periode_code : char(6) NOT NULL <<FK>>
+        material_no : varchar(28) NOT NULL <<FK>>
+        price : numeric(15,2) NOT NULL
+    }
+    
+    entity "PackingSpecImage" as cps_image {
+        cps_image_id : int <<PK>> <<AUTO_INCREMENT>>
+        --
+        cps_code : varchar(28) NOT NULL <<FK>>
+        cps_image_type : tinyint NOT NULL 
+        cps_image_path : varchar(1000) NOT NULL
+    }
+    
+    note top of cps_image
+      cps_image_type of type: 
+        <<ENUM: 0:part, 1:qkp, 2:bkp, 3:outer, 4:inner>>
+    end note
+    
+    entity "PackingMaterial" as material {
+        material_no : varchar(12) <<PK>>
+        --
+        cps_code : varchar(34) <<FK>>
+        packing_material_type : tinyint <<ENUM: Module|Box|Inner|Outer>>
+        dimension_width : numeric(5,2) NOT NULL
+        dimension_height : numeric(5,2) NOT NULL
+        dimension_length : numeric(5,2) NOT NULL
+        dimension_inner_width : numeric(5,2) NOT NULL
+        dimension_inner_length : numeric(5,2) NOT NULL
+        dimension_inner_height : numeric(5,2) NOT NULL
+        dimension_outer_width : numeric(5,2) NOT NULL
+        dimension_outer_length : numeric(5,2) NOT NULL
+        dimension_outer_height : numeric(5,2) NOT NULL
+        ewarehouse_item_no : varchar(6) NULLABLE <<FK>>
+        ewarehouse_price : numeric(15,2) NULLABLE
+        price : numeric(15,2) NOT NULL <<DEFAULT 0.00>>
+        currency_code : char(3) NOT NULL <<FK>> <<DEFAULT 'IDR'>>
+    }
+    
+    cps ||-o| cps_pse_dtl : has pse info detailed
+    cps_pse_dtl }|--|| material : packed using 
+    cps ||-o{ cps_image : has many
+    cps ||-o{ cps_dtl : has many
+    cps_dtl }|-o| material_price
+    material ||--|{ currency : purchased in
 
 }
 
-package SupplierService #DDD {
-    entity "Supplier" as supplier {
-        * code : varchar(10) <<PK>>
-    --
-        name : varchar(25)
-        address : varchar(250)  
-    }
+package Other as other_domain #f5f5f5ff {
+  package DocumentDomain #DDD {
+      entity "Document" as doc {
+          document_id : integer <<PK>> <<AUTO_INCREMENT>>
+          --
+          document_url : varchar(1000) NOT NULL
+      }
+  }
 
-    entity "Plant" as plant {
-        * code : varchar(10) <<PK>>
-    }
+  package ApprovalDomain #DDD {
+      entity "ApprovalRequest" as request {
+          id : char(36) <<PK>> <<UUID>>
+          --
+          target_type : varchar(50) NOT NULL
+          target_id : char(36) NOT NULL <<UUID>>
+          status : tinyint NOT NULL <<ENUM: 0:pending|1:approved|2:rejected>>
+          created_at : datetime NOT NULL
+      }
 
-    entity "Dock" as dock {
-        * code varchar(10) <<PK>
-    }    
-}
+      entity "ApprovalStep" as step {
+          id : char(36) <<PK>> <<UUID>>
+          --
+          request_id : char(36) NOT NULL <<FK>>
+          sequence : int NOT NULL
+          role_required : varchar(50) NOT NULL
+          status : tinyint NOT NULL <<ENUM: 0:pending|1:approved|2:rejected>>
+      }
 
-package DocumentService #DDD {
-    entity "Document" as img {
-    }
-}
+      entity "ApprovalAction" as action {
+          id : char(36) <<PK>> <<UUID>>
+          --
+          step_id : char(36) NOT NULL <<FK>>
+          user_id : varchar(10) NOT NULL <<FK>>
+          action : tinyint NOT NULL <<ENUM: 0:approve|1:reject>>
+          comment : text NULLABLE
+          action_date : datetime NOT NULL
+      }
 
-package UserManagementService #DDD {
-    entity "User" as user {
-        no : varchar(10) <<PK>>
-        name : varchar
-        role_code : varchar <<FK>>
-    }
+      request ||--o{ step : has
+      step ||--o{ action : has
+      request ||--o{ step : has many
+      request }|..|| cps : "require approval from \n(target_id = cps_code)"
+  }
 
-    entity "Department" as dept {
-        * code : varchar(5) <<PK>>
-        --
-        * name : varchar
-        parent_dept_code : int  
-    }
+  package MessagingDomain #DDD {
+      entity "Notification" as notif {
+          notification_id : int <<PK>> <<AUTO_INCREMENT>>
+          --
+          user_code : varchar(10) NOT NULL <<FK>>
+          title : varchar(255) NOT NULL
+          message : text NOT NULL
+          is_read : boolean NOT NULL <<DEFAULT false>>
+          created_at : datetime NOT NULL
+      }
+  }
+  package UserManagementDomain #DDD {
+      entity "User" as user {
+          user_code : varchar(10) <<PK>>
+          --
+          name : varchar(255) NOT NULL
+          role_code : varchar(5) NOT NULL <<FK>>
+      }
 
-    dept::parent_dept_code --> dept::codd
+      entity "Department" as dept {
+          dept_code : varchar(5) <<PK>>
+          --
+          name : varchar(100) NOT NULL
+          parent_dept_code : varchar(5) NOT NULL <<FK>>
+      }
 
-    class "Role" as role {
-        +code : varchar(5) <<PK>>
-        --
-        name : varchar
-    }
+      dept::parent_dept_code --> dept::dept_code
 
-    entity "DepartmentRole" as dept_role {
-        dept_code <varchar> <<PK>><<FK>>
-        role_code <varchar> <<PK>><<FK>>
-    }
-}
+      entity "Role" as role {
+          role_code : varchar(5) <<PK>>
+          --
+          name : varchar(100) NOT NULL
+      }
 
-package ApprovalService #DDD {
-    entity "Approval" as approval {
-    }
-}
+      entity "DepartmentRole" as dept_role {
+          dept_code : varchar(5) <<PK>> <<FK>>
+          role_code : varchar(5) <<PK>> <<FK>>
+          --
+      }
 
-package NotificationService #DDD {
-    entity "Notification" as notif {
-    }
-}
-
-package PackingSpecImagesService #DDD {
-    entity "QKP Image" as qkp_image {
-        * qkp_image_id : varchar(20) <<PK>>
-        spec_code : varchar(20) <<FK>>
-        --
-        doc_id : varchar
-    } 
-
-    entity "BKP Image" as bkp_image {
-        * bkp_image_id : varchar(20) <<
-        spec_code : varchar(20) <<FK>>
-        --
-        doc_id : varchar
-    } 
-
-        entity "Packing Image" as packing_image {
-        * packing_image_id : varchar(20) <<
-        spec_code : varchar(20) <<FK>>
-        --
-        doc_id : varchar
-    } 
-
-    entity "Part Image " as part_image {
-        * part_image_id : varchar(20) <<
-        spec_code : varchar(20) <<FK>>
-        --
-        doc_id : varchar
-    }
-
-    entity "Outer Image " as outer_image {
-        * part_image_id : varchar(20) <<
-        spec_code : varchar(20) <<FK>>
-        --
-        doc_id : varchar
-    }
-
+      user ||--|| dept : "belong to"
+      user }o--|| role : "is a"
+      user ||--o{ notif : "receive"
+      user ||--o{ action : performs
+      project }o--|| user : "managed"
+      request }o--|| user : "requested by"
+      supplier ||--o{ user : "logged in as "
+      dept_role }o--o{ role : "has many"
+      dept_role }o--o{ dept : "has many"    
+  }
 }
 
 ' Relationships
-ps ||--o| module_type : "enclosed by"
-'ps ||--o{ pm : "consist of"
-'ps ||--o{ img: "has many \npacking step images"
-'ps ||--o{ img: "has many \ninner images"
-ps ||--o| img: "has \nsoftcopy image"
-ps ||--o{ psi: "has packing spec\n image reference"
-ps ||--o{ ps_dpi: "detailed DPI in"
-ps ||--o{ packing_part: has many
-ps ||--o{ qkp_image : "has many"
-ps ||--o{ bkp_image : "has many"
-ps ||--o{ part_image : "has many"
-ps ||--o{ packing_image : "has many"
-ps ||--o{ outer_image : "has many"
-
-user ||--|| dept: "belong to"
-user }o--|| role : "is a"
-user ||--o{ notif: "receive"
-dept_role }o--o{ role: "has many"
-dept_role }o--o{ dept: "has many"
+cps ||--o| material : "packed by"
 
 part ||--o{ part : "has subparts"
-part ||--o{ img : "has many"
-part ||--o{ outhouse_price : "has one"
-part ||--o{ inhouse_price : "has one"
 part ||--|{ suffix : has
 part ||--o{ prep_time : "prepared within"
-'pm ||--o{ img: "has many"
-
-approval }o--|| user : "approved by"
-approval }o--|| ps : "for spec"
-approval ||--o{ notif : "  "
 
 supplier ||--o{ part : "produced by"
 supplier ||--|{ plant : "has"
 supplier ||--|{ dock : "has"
 
 model ||--o{ part : "consists of"
-'model ||--o{ ps : "has packing specs"
 model ||--o{ project : "used in"
+model ||--o{ country : "exported to"
 
 project }o--|| dept : "belongs to"
-project }o--|| user : "managed"
-project ||--o{ country : "exported to"
-project ||--|| dpi : "parts and packaging detailed in"
 
-rp ||--o{ outhouse_price : "reported at"
-rp ||--o{ inhouse_price : "reported at"
-
-img ||--|| qkp_image
-img ||--|| bkp_image
-img ||--|| part_image
-img ||--|| packing_image
-img ||--|| outer_image
 @enduml
 
 /'
@@ -540,5 +460,36 @@ Outhouse_price
 | ---------- | ---------- | ---- | -------------- | ------ |
 | P001000001 | 03.2025    | 2025 | Aisin Seiki    | 102.00 |
 | P001000002 | 03.2025    | 2025 | Toyota Boshoku | 98.50  |
+
+====================================================
+SAMPLE Records to illustrate Approval process works
+====================================================
+
+ApprovalRequest
+| id (UUID) | target\_type  | target\_id (UUID) | status     | created\_at         |
+| --------- | ------------- | ----------------- | ---------- | ------------------- |
+| `req-001` | `PackingSpec` | `ps-789`          | `Approved` | 2025-07-17 09:00:00 |
+
+
+ApprovalSteps
+| id       | request\_id | sequence | role\_required | status   |
+| -------- | ----------- | -------- | -------------- | -------- |
+| step-001 | req-001     | 1        | `PIC`          | Approved |
+| step-002 | req-001     | 2        | `Section Head` | Approved |
+| step-003 | req-001     | 3        | `Dept Head`    | Approved |
+
+ApprovalActions
+| id      | step\_id | user\_id | action  | comment            | action\_date        |
+| ------- | -------- | -------- | ------- | ------------------ | ------------------- |
+| act-101 | step-001 | user-01  | Approve | "Looks good."      | 2025-07-17 09:05:00 |
+| act-102 | step-002 | user-02  | Approve | "Reviewed and OK." | 2025-07-17 10:00:00 |
+| act-103 | step-003 | user-03  | Approve | "Final approval."  | 2025-07-17 11:00:00 |
+
+User
+| id      | name    | role         |
+| ------- | ------- | ------------ |
+| user-01 | Alice   | PIC          |
+| user-02 | Boby     | Section Head |
+| user-03 | Charlie | Dept Head    |
 
 '/
