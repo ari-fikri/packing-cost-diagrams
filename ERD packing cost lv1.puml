@@ -68,47 +68,68 @@ package "Master Data" as master_domain #DDD {
 
 package "Packing Spec" as ps_domain #DDD {
 
-    entity "Project" as project {
-        project_code : char(6) <<PK>>
-        --
-        name : varchar(64) NULLABLE
-        description : varchar(256) NULLABLE
-        manager : varchar(10) NULLABLE <<FK>>
-        implementation_period : varchar(6) NOT NULL
-        status : tinyint NOT NULL <<ENUM: 0:Draft|1:Active|2:OnHold|3:Completed>> <<DEFAULT 1>>
-        note : varchar(1000) NULLABLE
-    }
-
-    entity "Model" as model {
+    package master #FFF {
+      entity "Model" as model {
         model_code : char(6) <<PK>>
         --
         name : varchar(100) NULLABLE
         remark : varchar(255) NULLABLE
         country_code : char(4) NOT NULL <<FK>>
+        implementation_period : varchar(6) NOT NULL
         project_code : char(6) NOT NULL <<FK>>
+      }
+
+      entity "Part" as part {
+          part_no : varchar(10) <<PK>>
+          --
+          suffix_code : varchar(2) NOT NULL <<FK>>
+          part_name : varchar(255) NOT NULL
+          parent_part_no : varchar(10) NULLABLE <<FK>>
+          supplier_code : varchar(10) NULLABLE <<FK>>
+          dimension_length : int
+          dimension_width : int
+          dimension_height : int
+          weight_per_pc : int
+          qty_per_box : int
+          total_weight : int
+      }
+
+      entity "Project" as project {
+          project_code : char(6) <<PK>>
+          --
+          name : varchar(64) NULLABLE
+          description : varchar(256) NULLABLE
+          manager : varchar(10) NULLABLE <<FK>>
+          implementation_period : varchar(6) NOT NULL
+          status : tinyint NOT NULL <<DEFAULT 1>>
+          note : varchar(1000) NULLABLE
+      }
+
+      note bottom of project
+        status: 0:Draft, 1:Active, 
+          2:OnHold, 3:Completed
+      end note       
+
+      entity "ModelPart" as model_part {
+          model_code : char(6) <<PK>> <<FK>>
+          part_no : varchar(10) <<PK>>
+          qty : int NOT NULL <<DEFAULT 1>>
+      }
+      
+      model ||--o{ model_part
+      part  ||--o{ model_part      
     }
 
-    entity "Part" as part {
-        part_no : varchar(10) <<PK>>
-        --
-        suffix_code : varchar(2) NOT NULL <<FK>>
-        part_name : varchar(255) NOT NULL
-        parent_part_no : varchar(10) NULLABLE <<FK>>
-        supplier_code : varchar(10) NULLABLE <<FK>>
-        dimension_length : int
-        dimension_width : int
-        dimension_height : int
-        weight_per_pc : int
-        qty_per_box : int
-        total_weight : int
-    }
-
-    entity "PreparationTime" as prep_time {
+    entity "PreparationTime" as prep_time  #e9dc23ff{
         part_no : varchar(10) <<PK>> <<FK>>
         --
         boxing : int
         stacking : int
     }
+
+    note bottom of prep_time 
+      Check this again
+    end note 
 
     entity "Suffix" as suffix {
         suffix_code : varchar(2) <<PK>>
@@ -116,116 +137,172 @@ package "Packing Spec" as ps_domain #DDD {
         note : varchar(10)
     }
 
-    entity "PackingSpec" as cps {
-        cps_id : int <<PK>> <<AUTO_INCREMENT>>
-        cps_code : varchar(34)
-        --
-        cps_code_ref : varchar(28) NULLABLE <<FK>>
-        model_code : varchar(6) NOT NULL <<FK>>
-        part_no : varchar(12) NOT NULL
-        is_active : boolean NOT NULL <<DEFAULT true>>
-        cps_type : tinyint NOT NULL <<DEFAULT 0>>
-    }
-    
-    note top of cps
-        composite cps_code = 
-          cps_type of tyoe( <<enum 0:CPS, 1:ECI, 2:PSI>>)
-          cps_code generated from : dest,
-          model, part_no, reporting_period
-    end note
-    
-    entity "PackingSpecDetail" as cps_dtl {
-        cps_id : int <<FK>>
-        cps_code : varchar(28) <<FK>>
-        packing_material_price_code : varchar(12) <<FK>>
-        --
-        qty : numeric(5,2) NOT NULL <<DEFAULT 1>>
-    }
-    
-    entity "PackingSpecPseDtl" as cps_pse_dtl {
-        cps_id : int <<PK>> <<AUTO_INCREMENT>>
-        --
-        cps_code : varchar(28) NOT NULL <<FK>>
-        packing_plant_current : varchar(6) NULLABLE
-        packing_plant_next : varchar(6) NULLABLE
-        vanning_plant_current : varchar(6) NULLABLE
-        vanning_plant_next : varchar(6) NULLABLE
-        category : tinyint NULLABLE 
-        importer_line_process : tinyint NULLABLE
-        case_code : varchar(4) NULLABLE
-        box_number : varchar(1000) NULLABLE
-        renban : char(2) NULLABLE
-        packing_line : varchar(4) NULLABLE
-        packing_process_boxing : tinyint NULLABLE
-        packing_process_stacking : tinyint NULLABLE
-    }
+    package PackingMaterial {
+      entity "PackingMaterialPrice" as material_price {
+          packing_material_price_code : varchar(12) <<PK>>
+          --
+          reporting_periode_code : char(6) NOT NULL <<FK>>
+          material_no : varchar(28) NOT NULL <<FK>>
+          price : numeric(15,2) NOT NULL
+      }
 
-    note top of cps_pse_dtl
-      category and packing line of type 
-        <<ENUM: 0:trim|1:welding|2:hardware|3:finish>>
-      packing_process_boxing and packing_process_stackin of type 
-        <<ENUM: 1:TMMIN | 2:supplier>>
-    end note
-    
-    entity "PackingSpecLogisticDtl" as cps_logistic_dtl {
-        cps_code : varchar(28) <<PK>> <<FK>>
-        --
-        dock_code :varchar(20) NULLABLE <<FK>>
-        remark :varchar(1000) NULLABLE <<FK>>
-        process_type : char(2) NULLABLE
-        address_rack : varchar (20) NULLABLE
-    }
-
-    cps ||--o| cps_logistic_dtl : has logistic info detailed
+      entity "PackingMaterial" as material {
+          material_no : varchar(12) <<PK>>
+          --
+          packing_material_type : tinyint <<ENUM: Module|Box|Inner|Outer>>
+          dimension_width : numeric(5,2) NOT NULL
+          dimension_height : numeric(5,2) NOT NULL
+          dimension_length : numeric(5,2) NOT NULL
+          dimension_inner_width : numeric(5,2) NOT NULL
+          dimension_inner_length : numeric(5,2) NOT NULL
+          dimension_inner_height : numeric(5,2) NOT NULL
+          dimension_outer_width : numeric(5,2) NOT NULL
+          dimension_outer_length : numeric(5,2) NOT NULL
+          dimension_outer_height : numeric(5,2) NOT NULL
+          ewarehouse_item_no : varchar(6) NULLABLE <<FK>>
+          ewarehouse_price : numeric(15,2) NULLABLE
+          price : numeric(15,2) NOT NULL <<DEFAULT 0.00>>
+          currency_code : char(3) NOT NULL <<FK>> <<DEFAULT 'IDR'>>
+      }
         
-    entity "PackingMaterialPrice" as material_price {
-        packing_material_price_code : varchar(12) <<PK>>
-        --
-        reporting_periode_code : char(6) NOT NULL <<FK>>
-        material_no : varchar(28) NOT NULL <<FK>>
-        price : numeric(15,2) NOT NULL
     }
-    
-    entity "PackingSpecImage" as cps_image {
+
+    package CalculationDomain #FFF {
+      
+      entity "Calculation" as calc {
+        calc_code : varchar(50) <<PK>>
+        --
+        model_code : varchar(6) NULLABLE
+        implementation_period : varchar(6) NULLABLE
+        status : boolean NOT NULL
+        calc_date : timestamp NOT NULL
+      } 
+
+      note bottom of calc
+        status: 0: obsolete 1:up-to-date
+      end note
+
+      entity "Calculation Detail" as calc_dtl {
+        calc_dtl_id : int <<PK>> <<AUTO_INCREMENT>>
+        --
+        calc_code : varchar(50) <<FK>>
+        part_no : varchar(28) <<FK>>
+      }
+
+      entity "Calculation Packing Detail" as calc_pack_dtl {
+        calc_dtl_id : int <<FK>> <<AUTO_INCREMENT>>
+        part_no : varchar(28) <<FK>>
+        packing_material_price_code : varchar(12) <<FK>>
+        /'TBC inland'/
+        /'TBC labor'/
+      }
+
+      entity "CalculationPart" as calc_part {
+        part_no : varchar(28) <<PK>> <<FK>>
+        --
+        implementation_period : varchar(6), NOT NULL
+        inner_cost :numeric (15,2) NULL
+        outer_cost :numeric (15,2) NULL
+        labor_cost : numeric (15,2) NULL
+        inland_cost : numeric (15,2) NULL
+      }
+
+      calc ||--|{ calc_dtl
+      calc_dtl ||--|{ calc_pack_dtl
+
+    }
+
+    package CPS as cps_domain #FFF {
+      
+      entity "PackingSpec (CPS)" as packing_spec {
+          cps_code : varchar(34)
+          --
+          cps_code_ref : varchar(28) NULLABLE <<FK>>
+          model_code : varchar(6) NOT NULL <<FK>>
+          part_no : varchar(12) NOT NULL
+          is_active : boolean NOT NULL <<DEFAULT true>>
+          cps_type : tinyint NOT NULL <<DEFAULT 0>>
+          revision : tinyint NOT NULL <<DEFAULT 0>>
+      }
+
+      note top of packing_spec
+          composite cps_code = 
+            cps_type : 0:CPS, 1:ECI, 2:PSI
+            cps_code generated from : dest,
+            model, part_no, reporting_period
+      end note
+
+      entity "PackingSpecDetail" as packing_spec_dtl {
+          cps_code : varchar(28) <<FK>>
+          --
+          packing_material_price_code : varchar(12) <<FK>>
+          qty : numeric(5,2) NOT NULL <<DEFAULT 1>>
+      }
+
+      entity "PackingSpecPseDtl" as packing_spec_pse_dtl {
+          cps_code : varchar(28) NOT NULL <<FK>>
+          --
+          packing_plant_current : varchar(6) NULLABLE
+          packing_plant_next : varchar(6) NULLABLE
+          vanning_plant_current : varchar(6) NULLABLE
+          vanning_plant_next : varchar(6) NULLABLE
+          category : tinyint NULLABLE 
+          importer_line_process : tinyint NULLABLE
+          case_code : varchar(4) NULLABLE
+          box_number : varchar(1000) NULLABLE
+          renban : char(2) NULLABLE
+          packing_line : varchar(4) NULLABLE
+          packing_process_boxing : tinyint NULLABLE
+          packing_process_stacking : tinyint NULLABLE
+      }
+
+       note bottom of packing_spec_pse_dtl
+        category and packing line :
+          0:trim 1:welding 2:hardware, 3:finish
+        packing_process_boxing and packing_process_stacking :
+          1:TMMIN, 2:supplier
+      end note
+
+      entity "PackingSpecLogisticDtl" as packing_spec_logistic_dtl {
+          cps_code : varchar(28) <<PK>> <<FK>>
+          --
+          dock_code :varchar(20) NULLABLE <<FK>>
+          remark :varchar(1000) NULLABLE <<FK>>
+          process_type : char(2) NULLABLE
+          address_rack : varchar (20) NULLABLE
+      }
+
+      entity "PackingSpecSupplierDtl" as packing_spec_supplier_dtl {
+        cps_code : varchar(28) NULL <<PK>> <<FK>>
+        part_weight : numeric (5,2) NULL 
+        packing_weight : numeric (5,2) NULL 
+        packing_qty : tinyint NULL 
+        pcs_kanban : tinyint NULL 
+      }
+
+      entity "PackingSpecImage" as cps_image {
         cps_image_id : int <<PK>> <<AUTO_INCREMENT>>
         --
         cps_code : varchar(28) NOT NULL <<FK>>
         cps_image_type : tinyint NOT NULL 
         cps_image_path : varchar(1000) NOT NULL
+      }
+    
+      note top of cps_image
+        cps_image_type : 
+          0:part, 1:qkp, 2:bkp, 3:outer, 4:inner
+      end note
+
     }
-    
-    note top of cps_image
-      cps_image_type of type: 
-        <<ENUM: 0:part, 1:qkp, 2:bkp, 3:outer, 4:inner>>
-    end note
-    
-    entity "PackingMaterial" as material {
-        material_no : varchar(12) <<PK>>
-        --
-        cps_code : varchar(34) <<FK>>
-        packing_material_type : tinyint <<ENUM: Module|Box|Inner|Outer>>
-        dimension_width : numeric(5,2) NOT NULL
-        dimension_height : numeric(5,2) NOT NULL
-        dimension_length : numeric(5,2) NOT NULL
-        dimension_inner_width : numeric(5,2) NOT NULL
-        dimension_inner_length : numeric(5,2) NOT NULL
-        dimension_inner_height : numeric(5,2) NOT NULL
-        dimension_outer_width : numeric(5,2) NOT NULL
-        dimension_outer_length : numeric(5,2) NOT NULL
-        dimension_outer_height : numeric(5,2) NOT NULL
-        ewarehouse_item_no : varchar(6) NULLABLE <<FK>>
-        ewarehouse_price : numeric(15,2) NULLABLE
-        price : numeric(15,2) NOT NULL <<DEFAULT 0.00>>
-        currency_code : char(3) NOT NULL <<FK>> <<DEFAULT 'IDR'>>
-    }
-    
-    cps ||-o| cps_pse_dtl : has pse info detailed
-    cps_pse_dtl }|--|| material : packed using 
-    cps ||-o{ cps_image : has many
-    cps ||-o{ cps_dtl : has many
-    cps_dtl }|-o| material_price
+    packing_spec ||-o| packing_spec_supplier_dtl
+    packing_spec ||-o| packing_spec_pse_dtl : has pse info detailed
+    packing_spec ||-o{ cps_image : has many
+    packing_spec ||-o{ packing_spec_dtl : has many
+    packing_spec_dtl }|-o| material_price
+    packing_spec ||--o| packing_spec_logistic_dtl : has logistic info detailed
     material ||--|{ currency : purchased in
 
+    material ||-o{ material_price : price movement detailed in
 }
 
 package Other as other_domain #f5f5f5ff {
@@ -243,9 +320,13 @@ package Other as other_domain #f5f5f5ff {
           --
           target_type : varchar(50) NOT NULL
           target_id : char(36) NOT NULL <<UUID>>
-          status : tinyint NOT NULL <<ENUM: 0:pending|1:approved|2:rejected>>
+          status : tinyint NOT NULL 
           created_at : datetime NOT NULL
       }
+
+      note top of request
+        status: 0:pending, 1:approved, 2:rejected
+      end note
 
       entity "ApprovalStep" as step {
           id : char(36) <<PK>> <<UUID>>
@@ -253,7 +334,7 @@ package Other as other_domain #f5f5f5ff {
           request_id : char(36) NOT NULL <<FK>>
           sequence : int NOT NULL
           role_required : varchar(50) NOT NULL
-          status : tinyint NOT NULL <<ENUM: 0:pending|1:approved|2:rejected>>
+          status : tinyint NOT NULL
       }
 
       entity "ApprovalAction" as action {
@@ -269,7 +350,7 @@ package Other as other_domain #f5f5f5ff {
       request ||--o{ step : has
       step ||--o{ action : has
       request ||--o{ step : has many
-      request }|..|| cps : "require approval from \n(target_id = cps_code)"
+      request }|--|| packing_spec : "require approval from \n(target_id = cps_code)"
   }
 
   package MessagingDomain #DDD {
@@ -325,7 +406,6 @@ package Other as other_domain #f5f5f5ff {
 }
 
 ' Relationships
-cps ||--o| material : "packed by"
 
 part ||--o{ part : "has subparts"
 part ||--|{ suffix : has
