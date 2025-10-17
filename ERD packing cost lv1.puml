@@ -137,7 +137,7 @@ package "Packing Spec" as ps_domain #DDD {
         note : varchar(10)
     }
 
-    package PackingMaterial {
+    package PackingMaterial #FFF {
       entity "PackingMaterialPrice" as material_price {
           packing_material_price_code : varchar(12) <<PK>>
           --
