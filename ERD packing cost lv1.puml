@@ -427,119 +427,127 @@ project }o--|| dept : "belongs to"
 ====================
 SAMPLE RECORDS
 ====================
+### Project
 
----------------------------
-ProductionMaster Service
----------------------------
-Model
-| code   | name     | generation | created_at         |
-| ------ | -------- | ---------- | ------------------ |
-| GGN155 | Hilux    | 8th Gen    | 2020-03-01 09:00:00 |
-| TGN166 | Fortuner | 2nd Gen    | 2021-05-12 13:30:00 |
+| project_code |
+| ------------ |
+| IMV          |
 
-Project
-| code      | name             | description          | project_manager | start_date | end_date   | status     |
-| --------- | ---------------- | -------------------- | ----------------| -----------| ---------- | ---------- |
-| PJ-HX2023 | Hilux 2023 TH    | Hilux 2023 Thailand  | 1               | 2022-07-01 | 2023-07-01 | Completed  |
-| PJ-FT2024 | Fortuner 2024 EX | Fortuner 2024 Export | 2               | 2023-01-15 | 2024-01-15 | Active     |
+---
 
-ProjectModel
-| project_code | model_code |
-| ------------ | -----------|
-| PJ-HX2023    | GGN155     |
-| PJ-FT2024    | TGN166     |
+### Model
 
-Country
-| code | country_name |
-| ---- | -------------|
-| TH   | Thailand     |
-| PH   | Philippines  |
+| model_code | dest_code | country_code | impl_period | project_code |
+| ---------- | --------- | ------------ | ----------- | ------------ |
+| 481D       | 722C      | TMT          | 03.2025     | IMV          |
+| 481D       | 301B      | TASA         | 05.2025     | IMV          |
+| 481D       | 537B      | TSM          | 04.2025     | IMV          |
+| 694W       | 709B      | TKM          | 04.2025     | IMV          |
 
-ReportingPeriod
-| year | periodname |
-| ---- | ---------- |
-| 2025 | 03.2025    |
-| 2025 | 08.2025    |
-| 2024 | 08.2024    |
+---
 
-ManHourParams
-| param_id | param_name             | value    |
-| -------- | -----------------------| ---------|
-| MH-001  | takt_time               | 1        |
-| MH-002  | inspection_time         | 0.3125   | 2.5/8
-| MH-003  | delivery_course_time    | 6        |
-| MH-004  | pallet_sorting_time     | 0.3125   | 2.5/8
-| MH-005  | non_pallet_sorting_time | 5.833    | 350/60
-| MH-006  | vanning_time            | 0,595    | 30/(24x2.1)
-| MH-007  | empty_box_return_time   | 5        |
+### Part
 
+| part_no      | part_name              |
+| ------------ | ---------------------- |
+| 90430T002300 | GASKET                 |
+| 89467BZ02000 | SENSOR, AIR FUEL RATIO |
+| 90466T006200 | CLIP, HOSE             |
 
+---
 
-------------------------------------
-User Management Service
-------------------------------------
-User
-| name         | role_name    |
-| ------------ | ------------ |
-| Aiko Tanaka  | Dept Head    |
-| Budi Santoso | Staff        |
+### ModelPart (Model's parts)
 
-Department
-| name  | full_dept_name                    | parent_dept_id |
-| ----- | --------------------------------- | -------------- |
-| PPM   | Production Part Mgmt              |                |
-| PBOD  | Part Business Operation Division  |                |
-| Proc  | Procurement                       | PBOD           |
+| model_code | part_no      | qty |
+| ---------- | ------------ | --- |
+| 481D       | 90430T002300 | 3   |
+| 481D       | 89467BZ02000 | 1   |
+| 481D       | 90466T006200 | 1   |
 
-Role
-| name         | dept_id |
-| ------------ | --------|
-| Dept Head    | PPM     |
-| Section Head | PPM     |
-| Staff        | Proc    |
+---
 
-DepartmentRole
-| dept_name | role_name    |
-| --------- | ------------ |
-| PPM       | Dept Head    |
-| PPM       | Section Head |
-| Proc      | Staff        |
+### PackingMaterial
 
-----------------------------------
-Packing Service
-----------------------------------
-PackingSpec
-| spec_code   | model_code |
-| ----------- | ---------- |
-| PS-GGN155-01| GGN155     |
-| PS-TGN166-01| TGN166     |
+| material_no  | material_name |
+| ------------ | ------------- |
+| B021-227514  | 3I-A          |
+| B021-471106  | 3A-A          |
+| B021-227514  | 3I-A          |
 
-----------------------------------
-Part Service
-----------------------------------
-Part
-| part\_no   | suffix\_code | part\_name   | parent\_part\_no | supplier\_code | dimension\_length | dimension\_width | dimension\_height | weight\_per\_pc | qty\_per\_box | total\_weight |
-| ---------- | ------------ | ------------ | ---------------- | -------------- | ----------------- | ---------------- | ----------------- | --------------- | ------------- | ------------- |
-| P001000001 | 01           | Front Bumper | (null)           | SUP-001        | 150               | 40               | 35                | 12              | 5             | 60            |
-| P001000002 | 02           | Rear Bumper  | P001000001       | SUP-002        | 140               | 45               | 30                | 11              | 5             | 55            |
+---
 
-Suffix
-| suffix\_code | note   |
-| ------------ | ------ |
-| 01           | Black  |
-| 02           | Silver |
+### PackingMaterialPrice
 
-Inhouse_price
-| part\_no   | periodname | year | msp   | jsp   | local\_outhouse | tooling\_outhouse | raw\_material | labor | foh\_fixed | foh\_var | unfinished\_depre | total\_process\_cost | exclusive\_investment | total\_cost |
-| ---------- | ---------- | ---- | ----- | ----- | --------------- | ----------------- | ------------- | ----- | ---------- | -------- | ----------------- | -------------------- | --------------------- | ----------- |
-| P001000001 | 03.2025    | 2025 | 100.0 | 120.0 | 10.0            | 5.0               | 40.0          | 15.0  | 8.0        | 2.0      | 3.0               | 83.0                 | 7.0                   | 90.0        |
-| P001000002 | 03.2025    | 2025 | 95.0  | 110.0 | 9.0             | 4.0               | 38.0          | 14.0  | 7.0        | 2.0      | 2.5               | 77.5                 | 6.5                   | 84.0        |
+| pmp_code              | material_no  | reporting_period | price |
+| --------------------- | ------------ | ---------------- | ----- |
+| B021-227514 02 2024   | B021-227514  | 02.2024          | 120   |
+| B021-227514 08 2024   | B021-227514  | 08.2024          | 125   |
+| B021-471106 02 2024   | B021-471106  | 02.2024          | 240   |
+| B021-471106 08 2024   | B021-471106  | 08.2024          | 240   |
+| B021-227514 02 2024   | B021-227514  | 02.2024          | 360   |
+| B021-227514 08 2024   | B021-227514  | 08.2024          | 366   |
 
-Outhouse_price
-| part\_no   | periodname | year | source         | price  |
-| ---------- | ---------- | ---- | -------------- | ------ |
-| P001000001 | 03.2025    | 2025 | Aisin Seiki    | 102.00 |
-| P001000002 | 03.2025    | 2025 | Toyota Boshoku | 98.50  |
+---
+
+### PackingSpec
+
+| cps_code                | model_code | is_active | revision |
+| ----------------------- | ---------- | --------- | -------- |
+| 722C 481D 90430T002300  | 481D       | TRUE      | 3        |
+| 722C 024J 90430T002300  | 024J       | TRUE      | 1        |
+
+---
+
+### PackingSpecDtl
+
+| cps_code                | pmp_id                | qty |
+| ----------------------- | --------------------- | --- |
+| 722C 481D 90430T002300  | B021-227514 02 2024   | 1   |
+| 722C 024J 90430T002300  | B021-471106 02 2024   | 2   |
+
+---
+
+### PackingSpecRevision
+
+| cps_code                | revision | changes                                                              |
+| ----------------------- | -------- | -------------------------------------------------------------------- |
+| 722C 481D 90430T002300  | 2        | `{' pmp_id: B021-227514 02 2024 , action: insert, qty: 1 }`         |
+
+---
+
+### Calculation
+
+| calc_code         | status     |
+| ----------------- | ---------- |
+| 2024 08 TAR TEST  | up-to-date |
+
+---
+
+### CalcDetail
+
+| calc_code         | cps_code                |
+| ----------------- | ----------------------- |
+| 2024 08 TAR TEST  | 722C 481D 90430T002300  |
+| 2024 08 TAR TEST  | 722C 024J 90430T002300  |
+
+---
+
+### CalcCost
+
+| calc_code         | cps_code                | reporting_period | inner_cost | outer_cost | labor_cost | inland_cost |
+| ----------------- | ----------------------- | ---------------- | ---------- | ---------- | ---------- | ----------- |
+| 2024 08 TAR TEST  | 722C 481D 90430T002300  |                  |            |            |            |             |
+| 2024 08 TAR TEST  | 722C 024J 90430T002300  |                  |            |            |            |             |
+
+---
+
+### History
+
+| id | timestamp        | tbl_name       | action | field_name | old_value               | new_value               | user |
+| -- | ---------------- | -------------- | ------ | ---------- | ----------------------- | ----------------------- | ---- |
+|    | 02.03.2025 09:10 | PackingSpec    | update | cps_code   | 722C 481D 90430T002300  | 722C 481D 90430T002301  | ari  |
+|    | 02.03.2025 09:15 | PackingSpecDtl | insert | cps_code   | NULL                    | 722C 481D 90430T002300  | ari  |
+
 
 ====================================================
 SAMPLE Records to illustrate Approval process works
