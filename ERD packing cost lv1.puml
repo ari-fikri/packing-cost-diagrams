@@ -302,7 +302,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
         cps_image_path : varchar(1000) NOT NULL
       }
 
-      entity "TB_R_CPS_REVISION" cps_rev {
+      entity "TB_R_CPS_REVISION" as cps_rev {
         cps_code : varchar(28) <<PK>> <<FK>>
         --
         revision : tinyint NOT NULL <<DEFAULT 1>>
