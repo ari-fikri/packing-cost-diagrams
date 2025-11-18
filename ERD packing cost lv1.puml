@@ -5,14 +5,14 @@ skinparam linetype ortho
 
 package "Master Data" as master_domain #DDD {
 
-    entity "Currency" as currency {
+    entity "TB_R_CURRENCY" as currency {
         currency_code : char(3) <<PK>>
         --
         name : varchar(25) NOT NULL
         country_code : char(4) NOT NULL <<FK>>
     }
 
-    entity "ExchangeRate" as exc_rate {
+    entity "TB_R_EXCHANGE_RATE" as exc_rate { 
         exc_rate_code : char(18) <<PK>>
         --
         start_periode : timestamp
@@ -24,7 +24,7 @@ package "Master Data" as master_domain #DDD {
 
     exc_rate ||--|{ currency
 
-    entity "Country" as country {
+    entity "TB_M_COUNTRY" as country {
         country_code : char(4) <<PK>>
         three_digits_country_code : char(3) <<PK>>
         --
@@ -36,8 +36,8 @@ package "Master Data" as master_domain #DDD {
         --
     }
 
-    entity "MasterParam" as mp {
-        reporting_periode_code : varchar(6) <<PK>> <<FK>>
+    entity "TB_M_PARAM" as mp {
+        ppr_code : varchar(6) <<PK>> <<FK>>
         --
         param_name : varchar(50) NOT NULL
         param_type : smallint NOT NULL <<ENUM: 0:manhour|1:inland|3:labor>>
@@ -45,41 +45,44 @@ package "Master Data" as master_domain #DDD {
     }
 
     'package SupplierDomain #DDD {
-    entity "Supplier" as supplier {
+    entity "TB_M_SUPPLIER" as supplier {
         supplier_code : char(6) <<PK>>
         --
         name : varchar(255) NOT NULL
         address : varchar(255) NULLABLE
     }
 
-    entity "Plant" as plant {
+    entity "TB_M_PLANT" as plant {
         plant_code : varchar(10) <<PK>>
+        --
+        supplier_code : char(6) <<FK>>
         --
     }
 
-    entity "Dock" as dock {
+    entity "TB_M_DOCK" as dock {
         dock_code : varchar(10) <<PK>>
         --
+        supplier_code : char(6) <<FK>>
     }
     
     rp ||--o{ mp : has many
 
 }
 
-package "Packing Spec" as ps_domain #DDD {
+package "TB_R_PACKING_SPEC" as ps_domain #DDD {
 
     package master #FFF {
-      entity "Model" as model {
+      entity "TB_M_MODEL" as model {
         model_code : char(6) <<PK>>
         --
         name : varchar(100) NULLABLE
         remark : varchar(255) NULLABLE
-        country_code : char(4) NOT NULL <<FK>>
-        implementation_period : varchar(6) NOT NULL
+        destination_code : char(4) NOT NULL <<FK>>
+        implementation_period : varchar(6) NOT NULL <<PK>>
         project_code : char(6) NOT NULL <<FK>>
       }
 
-      entity "Part" as part {
+      entity "TB_M_PART" as part {
           part_no : varchar(10) <<PK>>
           --
           suffix_code : varchar(2) NOT NULL <<FK>>
@@ -94,13 +97,12 @@ package "Packing Spec" as ps_domain #DDD {
           total_weight : int
       }
 
-      entity "Project" as project {
+      entity "TB_M_PROJECT" as project {
           project_code : char(6) <<PK>>
           --
           name : varchar(64) NULLABLE
           description : varchar(256) NULLABLE
           manager : varchar(10) NULLABLE <<FK>>
-          implementation_period : varchar(6) NOT NULL
           status : tinyint NOT NULL <<DEFAULT 1>>
           note : varchar(1000) NULLABLE
       }
@@ -110,9 +112,9 @@ package "Packing Spec" as ps_domain #DDD {
           2:OnHold, 3:Completed
       end note       
 
-      entity "ModelPart" as model_part {
-          model_code : char(6) <<PK>> <<FK>>
-          part_no : varchar(10) <<PK>>
+      entity "TB_R_MODEL_PART" as model_part {
+          model_code : char(6) <<FK>>
+          part_no : varchar(10) <<FK>>
           qty : int NOT NULL <<DEFAULT 1>>
       }
       
@@ -131,14 +133,14 @@ package "Packing Spec" as ps_domain #DDD {
       Check this again
     end note 
 
-    entity "Suffix" as suffix {
+    entity "TB_M_SUFFIX " as suffix {
         suffix_code : varchar(2) <<PK>>
         --
         note : varchar(10)
     }
 
     package PackingMaterial #FFF {
-      entity "PackingMaterialPrice" as material_price {
+      entity "T_R_PACKING_MATERIAL_PRICE" as material_price {
           packing_material_price_code : varchar(12) <<PK>>
           --
           reporting_periode_code : char(6) NOT NULL <<FK>>
@@ -146,7 +148,7 @@ package "Packing Spec" as ps_domain #DDD {
           price : numeric(15,2) NOT NULL
       }
 
-      entity "PackingMaterial" as material {
+      entity "TB_M_PACKING_MATERIAL" as material {
           material_no : varchar(12) <<PK>>
           --
           packing_material_type : tinyint <<ENUM: Module|Box|Inner|Outer>>
@@ -163,13 +165,14 @@ package "Packing Spec" as ps_domain #DDD {
           ewarehouse_price : numeric(15,2) NULLABLE
           price : numeric(15,2) NOT NULL <<DEFAULT 0.00>>
           currency_code : char(3) NOT NULL <<FK>> <<DEFAULT 'IDR'>>
+          mdsds_doc : varchar(255) NULLABLE
       }
         
     }
 
-    package CalculationDomain #FFF {
+    package Calculation #FFF {
       
-      entity "Calculation" as calc {
+      entity "TB_R_CALCULATION" as calc {
         calc_code : varchar(50) <<PK>>
         --
         model_code : varchar(6) NULLABLE
@@ -182,7 +185,7 @@ package "Packing Spec" as ps_domain #DDD {
         status: 0: obsolete 1:up-to-date
       end note
 
-      entity "Calculation Detail" as calc_dtl {
+      entity "TB_R_CALCULATION_DETAIL" as calc_dtl {
         calc_dtl_id : int <<PK>> <<AUTO_INCREMENT>>
         --
         calc_code : varchar(50) <<FK>>
@@ -214,7 +217,7 @@ package "Packing Spec" as ps_domain #DDD {
 
     package CPS as cps_domain #FFF {
       
-      entity "PackingSpec (CPS)" as packing_spec {
+      entity "TB_R_CPS" as packing_spec {
           cps_code : varchar(34)
           --
           cps_code_ref : varchar(28) NULLABLE <<FK>>
@@ -225,6 +228,16 @@ package "Packing Spec" as ps_domain #DDD {
           revision : tinyint NOT NULL <<DEFAULT 0>>
       }
 
+      entity "TB_H_ALL" as hist {
+        timestamp : timestamp NOT NULL
+        tbl_name : varchar(50) NOT NULL
+        field_name : varchar(50) NOT NULL
+        action : varchar(10) NOT NULL
+        old_value : varchar(255) NULLABLE
+        new_value : varchar(255) NULLABLE
+        user: varchar(10) NULLABLE
+      }
+
       note top of packing_spec
           composite cps_code = 
             cps_type : 0:CPS, 1:ECI, 2:PSI
@@ -232,14 +245,14 @@ package "Packing Spec" as ps_domain #DDD {
             model, part_no, reporting_period
       end note
 
-      entity "PackingSpecDetail" as packing_spec_dtl {
+      entity "TB_R_CPS_DETAIL" as packing_spec_dtl {
           cps_code : varchar(28) <<FK>>
           --
           packing_material_price_code : varchar(12) <<FK>>
           qty : numeric(5,2) NOT NULL <<DEFAULT 1>>
       }
 
-      entity "PackingSpecPseDtl" as packing_spec_pse_dtl {
+      entity "TB_R_CPS_PSE_DETAIL" as packing_spec_pse_dtl {
           cps_code : varchar(28) NOT NULL <<FK>>
           --
           packing_plant_current : varchar(6) NULLABLE
@@ -263,7 +276,7 @@ package "Packing Spec" as ps_domain #DDD {
           1:TMMIN, 2:supplier
       end note
 
-      entity "PackingSpecLogisticDtl" as packing_spec_logistic_dtl {
+      entity "TB_R_CPS_LOGISTIC_DETAIL" as packing_spec_logistic_dtl {
           cps_code : varchar(28) <<PK>> <<FK>>
           --
           dock_code :varchar(20) NULLABLE <<FK>>
@@ -274,13 +287,14 @@ package "Packing Spec" as ps_domain #DDD {
 
       entity "PackingSpecSupplierDtl" as packing_spec_supplier_dtl {
         cps_code : varchar(28) NULL <<PK>> <<FK>>
+        --
         part_weight : numeric (5,2) NULL 
         packing_weight : numeric (5,2) NULL 
         packing_qty : tinyint NULL 
         pcs_kanban : tinyint NULL 
       }
 
-      entity "PackingSpecImage" as cps_image {
+      entity "TB_R_CPS_IMAGE" as cps_image {
         cps_image_id : int <<PK>> <<AUTO_INCREMENT>>
         --
         cps_code : varchar(28) NOT NULL <<FK>>
@@ -307,15 +321,16 @@ package "Packing Spec" as ps_domain #DDD {
 
 package Other as other_domain #f5f5f5ff {
   package DocumentDomain #DDD {
-      entity "Document" as doc {
-          document_id : integer <<PK>> <<AUTO_INCREMENT>>
+      entity "TB_R_DOCUMENT" as doc {
+          document_id : varchar <<PK>>
           --
-          document_url : varchar(1000) NOT NULL
+          document_type : tinyint NOT NULL
+          document_path : varchar(1000) NOT NULL
       }
   }
 
   package ApprovalDomain #DDD {
-      entity "ApprovalRequest" as request {
+      entity "TB_R_APPROVAL_REQUEST" as request {
           id : char(36) <<PK>> <<UUID>>
           --
           target_type : varchar(50) NOT NULL
@@ -337,7 +352,7 @@ package Other as other_domain #f5f5f5ff {
           status : tinyint NOT NULL
       }
 
-      entity "ApprovalAction" as action {
+      entity "TB_R_APPROVAL_ACTION" as action {
           id : char(36) <<PK>> <<UUID>>
           --
           step_id : char(36) NOT NULL <<FK>>
@@ -354,7 +369,7 @@ package Other as other_domain #f5f5f5ff {
   }
 
   package MessagingDomain #DDD {
-      entity "Notification" as notif {
+      entity "TB_R_NOTIFICATION" as notif {
           notification_id : int <<PK>> <<AUTO_INCREMENT>>
           --
           user_code : varchar(10) NOT NULL <<FK>>
@@ -365,14 +380,14 @@ package Other as other_domain #f5f5f5ff {
       }
   }
   package UserManagementDomain #DDD {
-      entity "User" as user {
+      entity "TB_M_USER" as user {
           user_code : varchar(10) <<PK>>
           --
           name : varchar(255) NOT NULL
           role_code : varchar(5) NOT NULL <<FK>>
       }
 
-      entity "Department" as dept {
+      entity "TB_M_DEPARTMENT" as dept {
           dept_code : varchar(5) <<PK>>
           --
           name : varchar(100) NOT NULL
@@ -381,13 +396,13 @@ package Other as other_domain #f5f5f5ff {
 
       dept::parent_dept_code --> dept::dept_code
 
-      entity "Role" as role {
+      entity "TB_M_ROLE" as role {
           role_code : varchar(5) <<PK>>
           --
           name : varchar(100) NOT NULL
       }
 
-      entity "DepartmentRole" as dept_role {
+      entity "TB_M_DEPARTMENT_ROLE" as dept_role {
           dept_code : varchar(5) <<PK>> <<FK>>
           role_code : varchar(5) <<PK>> <<FK>>
           --
