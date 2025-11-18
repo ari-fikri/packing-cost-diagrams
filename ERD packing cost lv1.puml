@@ -285,7 +285,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
           address_rack : varchar (20) NULLABLE
       }
 
-      entity "PackingSpecSupplierDtl" as packing_spec_supplier_dtl {
+      entity "TB_R_CPS_SUPPLIER_DETAIL" as packing_spec_supplier_dtl {
         cps_code : varchar(28) NULL <<PK>> <<FK>>
         --
         part_weight : numeric (5,2) NULL 
@@ -300,6 +300,13 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
         cps_code : varchar(28) NOT NULL <<FK>>
         cps_image_type : tinyint NOT NULL 
         cps_image_path : varchar(1000) NOT NULL
+      }
+
+      entity "TB_R_CPS_REVISION" cps_rev {
+        cps_code : varchar(28) <<PK>> <<FK>>
+        --
+        revision : tinyint NOT NULL <<DEFAULT 1>>
+        changes : text NULLABLE
       }
     
       note top of cps_image
