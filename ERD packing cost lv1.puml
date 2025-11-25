@@ -25,8 +25,7 @@ package "Master Data" as master_domain #DDD {
     exc_rate ||--|{ currency
 
     entity "TB_M_COUNTRY" as country {
-        country_code : char(4) <<PK>>
-        three_digits_country_code : char(3) <<PK>>
+        country_code : char(3) <<PK>>
         --
         country_name : varchar(100) NOT NULL
     }
@@ -102,7 +101,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
       entity "TB_M_DESTINATION" as dest {
           destination_code : varchar(2) <<PK>>
           --
-          country_code : char(4) NOT NULL <<FK>>
+          country_code : char(3) NOT NULL <<FK>>
           destination_country_code : char(4) NULLABLE
           destination_country_name : varchar(100) NULLABLE
       }
