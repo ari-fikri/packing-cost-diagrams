@@ -78,7 +78,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
         model_cfc: char(6)
         model_name : varchar(100) NULLABLE
         model_remark : varchar(255) NULLABLE
-        model_destination_code : char(4) NOT NULL <<FK>>
+        destination_code : char(4) NOT NULL <<FK>>
         model_implementation_period : varchar(6) NOT NULL <<PK>>
         model_type :char(3) NOT NULL <<ENUM: 0:pxp|1:lot|2:eng>>
         project_code : char(6) NOT NULL <<FK>>
@@ -99,6 +99,14 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
           total_weight : int
       }
 
+      entity "TB_M_DESTINATION" as dest {
+          destination_code : varchar(2) <<PK>>
+          --
+          country_code : char(4) NOT NULL <<FK>>
+          destination_country_code : char(4) NULLABLE
+          destination_country_name : varchar(100) NULLABLE
+      }
+
       entity "TB_M_PROJECTS" as project {
           project_code : char(6) <<PK>>
           --
@@ -114,7 +122,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
           2:OnHold, 3:Completed
       end note       
 
-      entity "TB_R_MODEL_PART" as model_part {
+      entity "TB_R_MODEL_PARTS" as model_part {
           model_code : char(23) <<FK>>
           part_no : varchar(10) <<FK>>
           suffix_code : varchar(2) <<FK>>
@@ -122,7 +130,8 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
       }
       
       model ||--o{ model_part
-      part  ||--o{ model_part      
+      part  ||--o{ model_part
+      model ||--o| dest : will be sent to
     }
 
     entity "PreparationTime" as prep_time  #e9dc23ff{
