@@ -86,6 +86,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
       entity "TB_M_PART" as part {
           part_no : varchar(10) <<PK>>
           --
+          part_unique_no : varchar(5) NULLABLE
           suffix_cd : varchar(2) NOT NULL <<FK>>
           part_nm : varchar(255) NOT NULL
           parent_part_no : varchar(10) NULLABLE <<FK>>
