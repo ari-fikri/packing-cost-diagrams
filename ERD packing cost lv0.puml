@@ -12,13 +12,13 @@ entity "Part" as part {
 entity "PackingSpec" as ps {
 }
 
-entity "PackingMaterialInner" as pm_inner {
-}
-
-entity "PackingMaterialOutter" as pm_outer {
+entity "Material" as material {
 }
 
 entity "Supplier" as supplier {
+}
+
+entity "Country" as country {
 }
 
 entity "Image" as img {
@@ -40,14 +40,20 @@ entity "Notification" as notif {
 
 }
 
+entity "PackingCostCalculation" as cost_cal {  
+}
+
 ' Relationships
-ps ||--o| part : "has one"
-ps ||--o{ pm_inner : "consist of"
-ps ||--o{ pm_outer : "consist of"
+ps |o--|| part : "packed in a"
+ps ||--o{ material : "consist of inner"
+ps ||--o{ material : "consist of outer"
+ps ||--o{ material : "has one module"
+ps ||--o{ material : "has one box"
+
 ps ||--o{ img: "has many \npacking step images"
 ps ||--o{ img: "has many \ninner images"
 ps ||--o{ img: "has many \nqkp images"
-ps ||--o{ img: "has many \nqkp images"
+ps ||--o{ img: "has many \nbkp images"
 ps ||--o| img: "has \nsoft copy image"
 
 user ||--|| dept: "belong to"
@@ -65,9 +71,14 @@ approval ||--o{ notif : "create"
 
 project ||--o{ model : "has many"
 model ||--o{ part : "consist"
-project||--o| country : "export to"
+model ||--o| country : "export to"
 
 project }o--|| dept : "belongs to"
 project }o--|| user : "PIC"
 
+cost_cal ||--|| model : calculate parts cost of
+cost_cal ||--|{ part : calculate cost for
+cost_cal ||--|| country : calculate parts cost exported to
+
+material ||--|| supplier :provided by
 @enduml
