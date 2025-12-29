@@ -163,6 +163,7 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
       entity "TB_M_MATERIAL" as material {
           material_no : varchar(12) <<PK>>
           --
+          supplier_cd : varchar(5) NULLABLE <<FK>>
           material_type : tinyint <<ENUM: Module|Box|Inner|Outer>>
           material_dim_width : numeric(5,2) NOT NULL
           material_dim_height : numeric(5,2) NOT NULL
