@@ -183,12 +183,6 @@ package "TB_R_PACKING_SPEC" as ps_domain #DDD {
           material_dim_width : numeric(5,2) NOT NULL
           material_dim_height : numeric(5,2) NOT NULL
           material_dim_length : numeric(5,2) NOT NULL
-          material_dim_inner_width : numeric(5,2) NOT NULL
-          material_dim_inner_length : numeric(5,2) NOT NULL
-          material_dim_inner_height : numeric(5,2) NOT NULL
-          material_dim_outer_width : numeric(5,2) NOT NULL
-          material_dim_outer_length : numeric(5,2) NOT NULL
-          material_dim_outer_height : numeric(5,2) NOT NULL
           material_ewh_item_no : varchar(6) NULLABLE <<FK>>
           material_ewh_price : numeric(15,2) NULLABLE
           material_price : numeric(15,2) NOT NULL <<DEFAULT 0.00>>
