@@ -1,0 +1,224 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+
+package "Master Data" {
+  '### master_params
+  entity "Master Params" as params {
+    ppr_period varchar(6) not null (PK)
+    ppr_month_start varchar(2) not null
+    ppr_month_end varchar(2) not null
+    inflation_labor_percentage numeric(3,2)
+    inflation_FOH_var_percentage numeric(3,2)
+    inflation_FOH_fix_percentage numeric(3,2)
+    cr_labor_percentage numeric(3,2)
+    cr_FOH_var_percentage numeric(3,2)
+    cr_FOH_fix_percentage numeric(3,2)
+    press_welding_percentage numeric(3,2)
+    nr_comp_percentage numeric(3,2)
+    tr_comp_percentage numeric(3,2)
+  }
+
+  '### PARTS
+  entity "Parts" as parts {
+    part_no varchar(6) not null (PK)
+    importer varchar(3) not null 
+    category varchar(6) not null
+    EG Model varchar(6) not null
+  }
+
+  entity "Raw Material" as raw_material {
+    material_no varchar(12) not null (PK)
+    material_name varchar(24) not null 
+
+  }
+
+}
+
+package "Transaction" {
+  
+  '### IHP COST
+  entity "IHP Cost" as cost {
+    part_no varchar(12) not null (PK)
+    ppr_period varchar(6) not null
+    tooling_oh numeric(12,2)
+    raw_material numeric(12,2)
+    TOTAL_purchase_cost numeric(12,2)
+    labor numeric(12,2)
+    foh_fix numeric(12,2)
+    foh_var numeric(12,2)
+    depre_common numeric(12,2)
+    depre_exclusive numeric(12,2)
+    TOTAL_process_cost numeric(12,2)
+    manhour numeric(12,2)
+    sales_volume numeric(12,2)
+    prod_volume numeric(12,2)
+  }
+
+
+
+
+'### IHP ANLYSIS
+entity "IHP Analysis" as analysis {
+  part_no varchar(12) not null (PK)
+  analysis_name varchar(24) not null
+  ppr_period varchar(6) not null
+  tooling_oh  numeric(12,2)
+  raw_material numeric(12,2)
+  TOTAL_purchase_cost numeric(12,2)
+  labor numeric(12,2)
+  foh_fix numeric(12,2)
+  foh_var numeric(12,2)
+  depre_common numeric(12,2)
+  depre_exclusive numeric(12,2)
+  TOTAL_process_cost numeric(12,2)
+  manhour numeric(12,2)
+  sales_volume numeric(12,2)
+  prod_volume numeric(12,2)
+}
+' Relationships
+
+params ||..|| cost : "ppr_period"
+params ||..|| analysis : "ppr_period"
+cost ||..|| analysis : "part_no"
+cost ||..|| analysis : "ppr_period"
+parts ||..|| cost : "part_no"
+
+}  
+'end package Transaction
+
+@enduml
+
+/' SAMPLE DATA
+
+
+---
+
+### Model
+
+| model_code | dest_code | country_code | impl_period | project_code |
+| ---------- | --------- | ------------ | ----------- | ------------ |
+
+---
+
+### PARTS
+
+| part_no       | importer | category | EG Model |
+| ------------- | -------- | -------- | -------- |
+| 51401-KWW-641 | TDR      | H2V      | NR       |
+| 51402-KWW-640 | TDR      | H2V      | NR       |
+| 51402-KWW-641 | TMV      | H2V      | NR       |
+| 51402-KWW-643 | TDR      | ICE      | TR       |
+
+
+---
+### PPR DATA
+
+|  part_no (FK) | period/scenario | std_cost | foh_var | foh_fixed | tooling_oh | raw_material | labor | depre_common | depre_exclusive | mh_cost | total_cost | sales_volume | prod_volume |
+| ------------- | --------------- | -------- | ------- | --------- | ---------- | ------------ | ----- | ------------ | --------------- | ------- | ---------- | ------------ | ----------- |
+| 51401-KWW-641	| 2024-08	9300	3170	3091	3363	3083	2965	3358	504	297	19161	0	0
+| 51401-KWW-641	| 2025-02	9533	3249	3168	3447	3160	3039	3442	516	304	19639	0	0
+| 51401-KWW-641	| pbmd_values	9221	3148	3070	3340	3062	2945	3335	501	295	18981	0	0
+| 51401-KWW-641	| inflation	9233	3152	3074	3344	3066	2949	3339	501	295	19004	0	0
+| 51402-KWW-640	| 2024-08	9400	3200	3121	3393	3113	2995	3388	508	299	19269	0	0
+| 51402-KWW-640	| 2025-02	9633	3279	3198	3477	3190	3069	3472	521	307	19739	0	0
+| 51402-KWW-640	| pbmd_values	9321	3178	3100	3370	3092	2975	3365	505	297	19141	0	0
+| 51402-KWW-640	| inflation	9333	3182	3104	3374	3096	2979	3369	506	298	19164	0	0
+| 51402-KWW-641	| 2024-08	8600	3000	2929	2703	2828	3090	2997	450	309	17547	0	0
+| 51402-KWW-641	| 2025-02	8816	3075	3005	2770	2900	3170	3073	461	317	17987	0	0
+| 51402-KWW-641	| pbmd_values	8732	2951	3180	2660	2731	3102	2850	428	310	17474	0	0
+| 51402-KWW-641	| inflation	8669	2934	3165	2651	2726	3100	2852	429	311	17553	0	0
+| 51402-KWW-643	| 2024-08	8900	3020	3169	2811	2669	3058	3149	472	306	17876	0	0
+| 51402-KWW-643	| 2025-02	9621	3259	3422	3037	2881	3304	3401	509	306	19240	0	0
+| 51402-KWW-643	| pbmd_values	9011	3111	3030	2965	2999	2831	3011	452	283	17947	0	0
+| 51402-KWW-643	| inflation	8949	3094	3017	2956	2994	2830	3014	453	284	18033	0	0
+
+
+---
+### PPR CALCULATION
+
+| part_no (FK)  | column_name            | group_name  | tooling_oh | raw_material | TOTAL_purchase_cost | labor | foh_fix  | foh_var | depre_common | depre_exclusive | TOTAL_process_cost | manhour | sales_volume | prod_volume |
+| ------------- | ----------             | calculation | ---------- | ------------ | ------------------- | ----- | -------- | ------- | ------------ | --------------- | ------------------ | ------- | ------------ | ----------- |
+| 51401-KWW-641 | 2024-08                | calculation | 3363       | 3083         | 9300                | 2965  | 3091     | 3170    | 3358         | 504             | 297                | 19161   | 0            | 0           |
+| 51401-KWW-641 | 2025-02                | calculation | 3363       | 3083         | 9300                | 2965  | 3091     | 3170    | 3358         | 504             | 297                | 19161   | 0            | 0           |
+| 51402-KWW-643 | 2024-08                | calculation | 2811       | 2669         | 8900                | 2830  | 3169     | 3020    | 472          | 306             | 17876              | 0       | 0            | 0           |
+|               | volume                 | analysis    |
+|               | inflation              | analysis    |
+|               | CR                     | analysis    |
+|               | Material Price Impact  | analysis    |
+|               | Gentan-i Impact        | analysis    |
+|               | Others                 | analysis    |
+
+
+ppr_period
+
+
+****************
+PBMD IHP TABLE
+****************
+Table TB_R_INHOUSE_COST_EG {
+  √ PART_NO varchar(12) [pk]
+  PARENT_PART_NO varchar(12) [pk]
+  PPR_PERIOD varchar(6) [pk]
+  FOB_CALCULATION_ID varchar(20)
+  COST_MOVEMENT_ID varchar(20)
+  √ ENGINE_TYPE varchar(10) [not null]
+  √ PROCESS_LABOR_COST float [not null]
+  √ PROCESS_LABOR_COST_FINAL float [not null]
+  √ PROCESS_FOH_FIXED_COST float [not null]
+  √ PROCESS_FOH_FIXED_COST_FINAL float [not null]
+  √ PROCESS_FOH_VAR_COST float [not null]
+  √ PROCESS_FOH_VAR_COST_FINAL float [not null]
+  √ PROCESS_UNFINISHED_DEPRE_COST float [not null]
+  √ PROCESS_UNFINISHED_DEPRE_COST_FINAL float [not null]
+  √ PROCESS_EXCLUSIVE_DEPRE_COST float [not null]
+  √ PROCESS_EXCLUSIVE_DEPRE_COST_FINAL float [not null]
+  √ PROCESS_TOTAL_PROCESS_COST float [not null]
+  √ PROCESS_TOTAL_PROCESS_COST_FINAL float [not null]
+  √ INHOUSE_MATERIAL_RAW_MATERIAL float [not null]
+  √ INHOUSE_MATERIAL_RAW_MATERIAL_FINAL float [not null]
+  INHOUSE_MATERIAL_TOOLING_OUTHOUSE_COST float [not null]
+  INHOUSE_MATERIAL_TOOLING_OUTHOUSE_COST_FINAL float [not null]
+  TOTAL_INHOUSE_COST float [not null]
+  TOTAL_INHOUSE_COST_FINAL float [not null]
+  REMARK varchar(200)
+  SYSTEM_SRC varchar(25) 
+  CREATED_DT datetime [not null]
+  CREATED_BY varchar(50) [not null]
+  CHANGED_DT datetime [not null]
+  CHANGED_BY datetime [not null]
+  FILE_ID varchar(50) [ref: > TB_R_FILE.FILE_ID, not null]
+}
+
+
+
+----
+### PPR Columns
+
+| col_id | column_name | group_name |
+| ------ | ----------- | ---------- |
+| 1       | volume                 | analysis    |
+| 2       | inflation              | analysis    |
+| 3       | CR                     | analysis    |
+| 4       | Material Price Impact  | analysis    |
+| 5       | Gentan-i Impact        | analysis    |
+| 6       | Others                 | analysis    |
+
+
+
+
+
+
+
+---
+### PPR ANALYSIS
+| part_no (FK)  | header_name           | tooling_oh | raw_material | TOTAL_purchase_cost | labor | foh_fix  | foh_var | depre_common | depre_exclusive | TOTAL_process_cost | manhour | sales_volume | prod_volume |
+| ------------- | -----------           | ---------- | ------------ | ------------------- | ----- | -------- | ------- | ------------ |
+| 51401-KWW-641 | volume                |
+| 51401-KWW-641 | inflation             |
+| 51401-KWW-641 | CR                    |
+| 51401-KWW-641 | Material Price Impact |
+| 51401-KWW-641 | Gentan-i Impact       |
+| 51401-KWW-641 | Others                |
