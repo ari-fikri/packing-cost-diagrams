@@ -64,6 +64,7 @@ package "Transaction" {
 entity "IHP Analysis" as analysis {
   part_no varchar(12) not null (PK)
   analysis_name varchar(24) not null
+  analysis_sequence integer () not null
   ppr_period varchar(6) not null
   tooling_oh  numeric(12,2)
   raw_material numeric(12,2)
@@ -113,13 +114,129 @@ parts ||..|| cost : "part_no"
 | 51402-KWW-643 | TDR      | ICE      | TR       |
 
 
+
+
+FK di transaction
+part_no
+importer
+category
+eg_nodel
+
+---
+### COST CATEGORY
+parent_category      | child_category         |
+-------------------- | ---------------------- |
+Labor                | Labor A                |
+Labor                | Labor B                |
+Labor                | Labor C                |
+Labor                | Labor D & Others       |
+Labor                | Bonus & Retirement A	  |
+Labor                | Bns & Rtrmnt D & oth	  |
+Labor                | Bonus & Retirement B	  |
+Labor                | Bonus & Retirement C	  |
+Labor                | Division exp - Labor	  |
+FOH Fixed            | General expense        |
+FOH Fixed            | Tax & Insurance        |
+FOH Fixed            | Repair & Maintenance 	|
+FOH Fixed            | R&M Forging Mold	      |
+FOH Fixed            | Division exp - Other	  |
+FOH Var              | Operating supply	      |
+FOH Var              | Consumable tools	      |
+FOH Var              | Utilities	            |
+FOH Var              | Interplant	            |
+FOH Var              | Depr. - Common Unex.	  |
+FOH Var              | Division exp - Depre	  |
+Exclusive Investment | Depr. - Unique Unex.	  |
+
+
+---
+### ENGINE_CATEGORY
+
+| EG_TYPE/Category | Description |
+| ---------------- | ------------------------- |
+| HEV              | Hybrid Electric Vehicle   | 
+| ICE              | Internal Combustion Engine| 
+| BEV              | Battery EV                |  
+| PHEV             | Plug-in Hybrid EV         |  
+| FCEV             | Fuel Cell EV              | 
+| FFHV             | Flex-Fuel Hybrid Engines  |  
+| NG-ICE           | Next Generation ICE       | 
+
+---
+### EG_MODEL
+| model_code |  eg_type  |
+| ---------- | --------- |
+|  NR        | ICE       |
+|  TR        | ICE       |
+|  1TR       | ICE       |
+|  2TR       | ICE       |
+
+### MATERIAL MASTER
+
+| ID | EG Model | Category |  Casting Part  |    CC   | Material No  |              Material Name                | Material Category |
+|    | -------- | -------- | -------------- | --------|--------------|-------------------------------------------|------------------ |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-010517  | ANTIMON SB 99.0 % MAX (EX. JAPAN YUSHIN )	| Additive          |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-022001  | CARBON LOW NITROGEN	                      | Additive          |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN	      | Additive          |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-061519  | FERRO MANGAN for FCD Cams(13%)            |                   |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-080556  | CARBON G-HIGH JG-01                       |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-010519  | ANTIMON METAL                             |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-061519  | FERRO MANGAN for FC (87%)                 |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-062518  | Ferro Silicon Low Al Kinsei Matex Cam's	  | Additive          |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-090720  | Inoculant Ultraseed LG size 0,7-2mm       |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-010518  | ANTIMON (SB) SHOT S 3-8 MM KINSEI MATEC   |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-031560  | CARBON DTCA-09 DURATIGHT / OCTO           |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |
+--
+### MATERIAL REPORT
+| EG Model | Category |  Casting Part  |    CC   | Material No  |              Material Name                | Material Category |   Price 	| Gentani |	    Total   |
+| -------- | -------- | -------------- | --------|--------------|-------------------------------------------|------------------ |---------- | ------- | ----------- |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-010517  | ANTIMON SB 99.0 % MAX (EX. JAPAN YUSHIN )	| Additive          |	328.333,0	|     0,0	|     4.790,0 |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-022001  | CARBON LOW NITROGEN	                      | Additive          |  19.500,0 |     0,7 |    12.843,0 |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN	      | Additive          |	 28.000,0 |	    0,8	|    21.974,0 |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-061519  | FERRO MANGAN for FCD Cams(13%)            |                   |  22.000,0 |         |             |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-080556  | CARBON G-HIGH JG-01                       |                   |  18.160,0 |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-010519  | ANTIMON METAL                             |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-061519  | FERRO MANGAN for FC (87%)                 |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-062518  | Ferro Silicon Low Al Kinsei Matex Cam's	  | Additive          |  29.567,0 |	    0,1 |     1.687,0 |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-090720  | Inoculant Ultraseed LG size 0,7-2mm       |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-010518  | ANTIMON (SB) SHOT S 3-8 MM KINSEI MATEC   |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-031560  | CARBON DTCA-09 DURATIGHT / OCTO           |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          | 10.900,0	|     0,0	|       109,0	|
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |           |         |             |
+
+--
+### COST ITEM PER PERIOD
+source: 
+file: Act Cost Report
+sheet: PV 2TR
+| Resource Name	| Plant	| Period/Year |	Bns & Rtrmnt D & oth | Bonus & Retirement A | Bonus & Retirement B | Bonus & Retirement C |	Consumable tools | Depr. - Common Unex.	| Depr. - Unique Unex. | Division exp - Depre |	Division exp - Labor | Division exp - Other	| General expense	 | Interplant	| Labor A |  Labor B | Labor C | Labor D & Others | Operating supply |	R&M Forging Mold | Repair & Maintenance	| Tax & Insurance |	Utilities |  
+| ------------- | ----- | ----------- | -------------------- | -------------------- | -------------------- | -------------------- | -----------------| -------------------- | -------------------- | -------------------- | ---------------------| -------------------- | ---------------- | ---------- | ------- | ---------| ------- |----------------- | ---------------- | ----------------- | -------------------- | --------------- | --------- | 
+| 111010C101	  | 4350	| 004.2025	  |                   62 |               61.428 |                   48 |                   66 |           34.895 |               30.393 |                    0 |                3.329 |              159.495 |               81.500 |       49.201	   |     18.743	| 114.829 |   24.692 |  28.239 |           38.808 |           52.604 |                 0 |              65.668	|           6.046	|    30.630 |
+| 111010C101	  | 4350	| 005.2025	  |                  -13 |               47.834 |                  -14 |                  -27 |           24.374 |               23.947 |                    0 |                2.713 |              130.512 |               65.805 |     35.777	     |     -7.969 |  95.681 |   26.568 |  18.376 |           48.936 |           35.583 |                 0 |              88.246	|           5.739	|    23.272 |
+| 111010C101	  | 4350	| 006.2025	  |                    0 |               40.567 |                    0 |                    0 |           24.613 |               28.650 |                    0 |                3.054 |              140.318 |               94.569 |     63.011	     |      5.890 | 105.877 |   23.494 |  25.569 |           34.737 |           36.316 |                 0 |             122.266	|           4.770 |    28.837 |
+| 111010C101	  | 4350	| 007.2025	  |                    0 |                    0 |                    0 |                    0 |           19.486 |               24.758 |                    0 |                2.668 |              125.196 |               69.762 |     88.652	     |      5.699 |  83.066 |   17.631 |  20.043 |           48.479 |           38.205 |                 0 |             141.940	|           3.975 |    27.326 |
+| 111010C101	  | 4350	| 008.2025	  |                    0 |               75.014 |                    0 |                    0 |           27.847 |               30.482 |                    0 |                3.025 |              154.824 |               53.001 |     57.506	     |      4.582 | 105.380 |   29.593 |  29.858 |           44.548 |           38.234 |                 0 |              77.811	|           5.240	|    24.943 |
+| 111010C101	  | 4350	| 009.2025	  |                    0 |               44.176 |                    0 |                    0 |           18.831 |               22.322 |                    0 |                2.217 |              102.134 |               49.449 |     38.576	     |     11.099 |  77.553 |   20.150 |  22.407 |           35.406 |           28.409 |                 0 |              60.712	|           5.233	|    22.865 |
+| 114010C060	  | 4350	| 004.2025	  |                   67 |               53.220 |               16.516 |                   71 |           64.699 |               59.325 |                  204 |                4.087 |              195.794 |              100.048 |       42.332	   |     23.009 | 100.493 |   55.726 |  31.685 |           43.546 |           69.103 |                 0 |              89.629	|           7.818	|    37.182 |
+| 114010C060	  | 4350	| 005.2025	  |                  -16 |               40.386 |               18.215 |                  -32 |           42.616 |               50.248 |                  173 |                3.448 |              165.867 |               83.631 |       37.713	   |    -10.128 |  81.263 |   62.443 |  20.619 |           54.916 |           53.175 |                 0 |             105.764	|           8.460	|    31.640 |
+| 114010C060	  | 4350	| 006.2025	  |                    0 |               30.142 |                9.693 |                    0 |           34.378 |               51.055 |                  163 |                3.201 |              147.049 |               99.106 |     44.298	     |      6.172 |  83.031 |   50.358 |  28.694 |           38.983 |           36.388 |                 0 |             150.140	|           5.512	|    29.689 |
+| 114010C060	  | 4350	| 007.2025	  |                    0 |                    0 |                    0 |                    0 |           36.669 |               45.909 |                  145 |                3.000 |              140.785 |               78.449 |     87.332	     |      6.408 |  67.671 |   37.981 |  22.493 |           54.405 |           44.342 |                 0 |             166.980	|           4.748	|    31.655 |
+| 114010C060	  | 4350	| 008.2025	  |                    0 |               63.871 |               17.916 |                    0 |           49.914 |               62.026 |                  195 |                4.086 |              209.077 |               71.574 |       60.135	   |      6.187 |  95.148 |   57.132 |  33.508 |           49.994 |           50.512 |                 0 |             154.608	|           6.560	|    31.743 |
+| 114010C060	  | 4350	| 009.2025	  |                    0 |               44.316 |               11.541 |                    0 |           43.159 |               48.381 |                  152 |                3.191 |              146.980 |               71.163 |       44.937	   |     15.972 |  71.219 |   39.183 |  25.146 |           39.734 |           39.867 |                 0 |             115.357	|           7.302	|    30.071 |
+
 ---
 ### PPR DATA
 
 |  part_no (FK) | period/scenario | std_cost | foh_var | foh_fixed | tooling_oh | raw_material | labor | depre_common | depre_exclusive | mh_cost | total_cost | sales_volume | prod_volume |
 | ------------- | --------------- | -------- | ------- | --------- | ---------- | ------------ | ----- | ------------ | --------------- | ------- | ---------- | ------------ | ----------- |
-| 51401-KWW-641	| 2024-08	9300	3170	3091	3363	3083	2965	3358	504	297	19161	0	0
-| 51401-KWW-641	| 2025-02	9533	3249	3168	3447	3160	3039	3442	516	304	19639	0	0
+| 51401-KWW-641	| 2024-08	        | 9300	   | 3170	   | 3091	     | 3363	      | 3083	2965	3358	504	297	19161	0	0
+| 51401-KWW-641	| 2025-02	        | 9533	   | 3249	   | 3168	     | 3447	      | 3160	3039	3442	516	304	19639	0	0
 | 51401-KWW-641	| pbmd_values	9221	3148	3070	3340	3062	2945	3335	501	295	18981	0	0
 | 51401-KWW-641	| inflation	9233	3152	3074	3344	3066	2949	3339	501	295	19004	0	0
 | 51402-KWW-640	| 2024-08	9400	3200	3121	3393	3113	2995	3388	508	299	19269	0	0
