@@ -8,6 +8,7 @@ package "Master Data" {
   '### master_params
   entity "Master Params" as params {
     ppr_period varchar(6) not null (PK)
+    --
     ppr_month_start varchar(2) not null
     ppr_month_end varchar(2) not null
     inflation_labor_percentage numeric(3,2)
@@ -23,133 +24,145 @@ package "Master Data" {
 
   '### PARTS
   entity "Parts" as parts {
-    part_no varchar(6) not null (PK)
+    part_no varchar(12) not null (PK)
+    --
     importer varchar(3) not null 
     eg_type varchar(6) not null
     eg_model varchar(6) not null
   }
 
   '### COST ITEM MASTER
-  entity "Cost Item Master" as cost_item_master {
+  entity "Cost Item Master" as ci_master {
     category_id varchar(4) not null (PK)
+    --
     category_name varchar(25) not null
   }    
 
   '### COST ITEM MAPPING
-  entity "Cost Item Mapping" as cost_item_mapping
+  entity "Cost Item Mapping" as ci_dtl
   {
-    parent_category_id varchar(4) not null
-    child_category varchar(50) not null
+    ci_dtl_id not null (PK) 
+    ---
+    parent_category_id varchar(4) not null (FK)
+    ci_dtl_category_name varchar(50) not null
   }
+  
+  ci_master |o-{ ci_dtl
 
-'### PROCESS COST
-'for cost items process cost calculation 
-entity "Process Cost" as process_cost {
-  period_year varchar(7) not null
-  plant varchar(5) not null
-  material_number varchar(12) not null
-  header varchar(24) not null
-  main_cost_component_name varchar(50) not null
-  quantity numeric(7,2) not null
-}
 
----
-'### MATERIAL COST
-'for cost items material cost calculation
-entity "Casting Material Cost Report" as mat_cost_rpt {
-  ppr_period varchar(6) not null
-  eg_model varchar(6) not null
-  eg_type varchar(6) not null
-  casting_part varchar(50)
-  cc varchar(7) not null
-  material_no varchar(12) not null (PK)
-  material_name varchar(100)
-  material_category varchar(50)
-  price_current numeric(15,2) not null
-  gentani_current numeric(15,2) not null
-  total_current numeric(15,2) not null
-  price_prev numeric(15,2) not null
-  gentani_prev numeric(15,2) not null
-  total_prev numeric(15,2) not null
-  diff_amt numeric(15,2) not null
-  diff_percentage numeric(15,2) not null
-  analysis_price_impact numeric(15,2)
-  analysis_ratio_impact numeric(15,2)
-  analysis_gentani_impact numeric(15,2)
-  remark_price_impact varchar(100)
-  remark_ratio_gentani_impact varchar(100)
-}
-
-  ---
   '### RATIO IMPACT PER CATEGORY
   'for material costs ratio impact per material category column lookup column
-  ppr_period varchar(6) not null
-  material_category varchar(50) not null
-  ratio_impact numeric(15,2) not null
-
----
-'### TOOLING OH
-'for cost items tooling outhouse cost calculation
-entity "Tooling OH" as tooling_OH {
-  ppr_period varchar(6) not null
-  eng_model varchar(6) not null
-  total_price_per_unit numeric(15,2) not null
-}
-
-
-  period_year varchar(7) not null
-  plant varchar(5) not null
-  material_number varchar(12) not null
-  header varchar(24) not null
-  main_cost_component_name varchar(50) not null
-  quantity numeric(7,2) not null
-}
-
----
-'### SALES VOLUME
-entity "Sales Volume" as sales_vol {
-  product varchar(24) not null
-  eng_model varchar(6) not null
-  eng_type varchar(6) not null
-  quantity numeric(7,2) not null
-  uom varchar(4) not null
-}
-
----
-'### PRODUCT VOLUME
-entity "Sales Volume" as sales_vol {
-  product varchar(24) not null
-  eng_model varchar(6) not null
-  eng_type varchar(6) not null
-  quantity numeric(7,2) not null
-  uom varchar(4) not null
-}
-
----
-'### CC
-entity "Cost Center" as cc {
-  Material Code/Part No 
-  Cost Center
-  Period
-  Key
-  GPQ
-  Key 1
-}
-
-
+  entity "RATIO IMPACT PER CATEGORY" as ripc {
+    ppr_period varchar(6) not null (PK)
+    material_category varchar(50) not null (PK)
+    --
+    ratio_impact numeric(15,2) not null
+  }  
 
   entity "Raw Material" as raw_material {
     material_no varchar(12) not null (PK)
     material_name varchar(24) not null 
-
   }
 
 }
 
-package "Transaction" {
-  
+
+package "INPUT SOURCES" as source {
+  '### PROCESS COST
+  'for cost items process cost calculation 
+  entity "Process Cost" as process_cost {
+    period_year varchar(7) not null  /'ppr period'/
+    plant varchar(5) not null
+    material_number varchar(12) not null
+    "header" varchar(24) not null                   /'category_name'/
+    main_cost_component_name varchar(50) not null  /'ci_dtl_category_name'/
+    quantity numeric(7,2) not null
+  }
+
+  '### TOOLING OH
+  'for cost items tooling outhouse cost calculation
+  entity "Tooling OH" as tooling_OH {
+    ppr_period varchar(6) not null (FK)
+    eng_model varchar(6) not null
+    total_price_per_unit numeric(15,2) not null
+  }  
+
+  '### PRODUCT VOLUME
+  entity "product Volume" as prod_vol {
+    material varchar (50) not null /'material no'/
+    ebase_quantity numeric(7,2) not null
+  }
+
+  '### SALES VOLUME
+  entity "Sales Volume" as sales_vol {
+    ppr_period varchar(6) not null (PK, FK)
+    product varchar(24) not null (PK, FK)  /'part_no'/
+    --
+    eng_model varchar(6) not null
+    eng_type varchar(6) not null
+    quantity numeric(7,2) not null
+    uom varchar(4) not null
+  }
+
+  parts ||-o{ sales_vol : sold
+
+  '### COST CENTER
+  entity "Cost Center" as cc {    
+    part_no varchar(12) not null (PK, FK)
+    cost_center varchar(7) not null (PK, FK)
+    period varchar(6) not null (PK, FK)  /'ppr period'/
+    --
+    key varchar(1) not null
+    gpq numeric(15,2 ) not null
+    key_1 varchar(1) not null
+  }
+
+  parts }|--|{ cc : belongs to
+
+  entity "gpq" as gpq {
+    gpq_id int  (PK)
+    --
+    costing_date varchar(6) not null
+    period_year varchar(7) not null  /'ppr period'/
+    costing_status varchar(5) not null
+    plant varchar(5) not null
+    material_number varchar(12) not null (FK)
+    "header" varchar(24) not null  (FK) /'category name'/ 
+    main_cost_component_name varchar(50) not null (FK) /'ci_dtl_category_name'/ 
+    quantity numeric(7,2) not null
+  }
+
+}
+
+package "REPORT" {
+  '### MATERIAL COST
+  'for cost items material cost calculation
+  entity "Casting Material Cost Report" as mat_cost_rpt {
+    ppr_period varchar(6) not null
+    eg_model varchar(6) not null
+    eg_type varchar(6) not null
+    casting_part varchar(50)
+    cc varchar(7) not null
+    material_no varchar(12) not null (PK)
+    material_name varchar(100)
+    material_category varchar(50)
+    price_current numeric(15,2) not null
+    gentani_current numeric(15,2) not null
+    total_current numeric(15,2) not null
+    price_prev numeric(15,2) not null
+    gentani_prev numeric(15,2) not null
+    total_prev numeric(15,2) not null
+    diff_amt numeric(15,2) not null
+    diff_percentage numeric(15,2) not null
+    analysis_price_impact numeric(15,2)
+    analysis_ratio_impact numeric(15,2)
+    analysis_gentani_impact numeric(15,2)
+    remark_price_impact varchar(100)
+    remark_ratio_gentani_impact varchar(100)
+  }
+
   '### IHP COST
-  entity "IHP Cost" as cost {
+  entity "IHP Cost" as ihp {
     part_no varchar(12) not null (PK)
     ppr_period varchar(6) not null
     tooling_oh numeric(12,2)
@@ -166,15 +179,15 @@ package "Transaction" {
     prod_volume numeric(12,2)
   }
 
-
-
-
 '### IHP ANLYSIS
 entity "IHP Analysis" as analysis {
   part_no varchar(12) not null (PK)
+  eng_model
+  eng_type 
+  importer
   analysis_name varchar(24) not null
   analysis_sequence integer () not null
-  ppr_period varchar(6) not null
+  ppr_period varchar(6) not null (PK)
   tooling_oh  numeric(12,2)
   raw_material numeric(12,2)
   TOTAL_purchase_cost numeric(12,2)
@@ -187,17 +200,26 @@ entity "IHP Analysis" as analysis {
   manhour numeric(12,2)
   sales_volume numeric(12,2)
   prod_volume numeric(12,2)
+}  
+
+
+  ' period_year varchar(7) not null
+  ' plant varchar(5) not null
+  ' material_number varchar(12) not null
+  ' header varchar(24) not null
+  ' main_cost_component_name varchar(50) not null
+  ' quantity numeric(7,2) not null
 }
+
+  
 ' Relationships
 
-params ||..|| cost : "ppr_period"
-params ||..|| analysis : "ppr_period"
-cost ||..|| analysis : "part_no"
-cost ||..|| analysis : "ppr_period"
-parts ||..|| cost : "part_no"
+' params ||..|| ihp : "ppr_period"
+' params ||..|| analysis : "ppr_period"
+' cost ||..|| analysis : "part_no"
+' cost ||..|| analysis : "ppr_period"
+' parts ||..|| cost : "part_no"
 
-}  
-'end package Transaction
 
 @enduml
 
@@ -223,31 +245,39 @@ source : from PBMD DB
 | 51402-KWW-641 | TMV      | H2V      | NR       |
 | 51402-KWW-643 | TDR      | ICE      | TR       |
 
+---
+### COST ITEM MASTER
+| category_id | category_name         |
+| ----------- | --------------------- |
+| CI001       | LABOR                 |
+| CI002       | FOH Fixed             |
+| CI003       | FOH Var               | 
+| CI004       | Exclusive Investment  |
 
 ---
 ### COST ITEM MAPPING
-parent_category      | child_category         |
+parent_category_id   | child_category_name    |
 -------------------- | ---------------------- |
-Labor                | Labor A                |
-Labor                | Labor B                |
-Labor                | Labor C                |
-Labor                | Labor D & Others       |
-Labor                | Bonus & Retirement A	  |
-Labor                | Bns & Rtrmnt D & oth	  |
-Labor                | Bonus & Retirement B	  |
-Labor                | Bonus & Retirement C	  |
-Labor                | Division exp - Labor	  |
-FOH Fixed            | General expense        |
-FOH Fixed            | Tax & Insurance        |
-FOH Fixed            | Repair & Maintenance 	|
-FOH Fixed            | R&M Forging Mold	      |
-FOH Fixed            | Division exp - Other	  |
-FOH Var              | Operating supply	      |
-FOH Var              | Consumable tools	      |
-FOH Var              | Utilities	            |
-FOH Var              | Interplant	            |
-FOH Var              | Depr. - Common Unex.	  |
-FOH Var              | Division exp - Depre	  |
+CI001                | Labor A                |
+CI001                | Labor B                |
+CI001                | Labor C                |
+CI001                | Labor D & Others       |
+CI001                | Bonus & Retirement A	  |
+CI001                | Bns & Rtrmnt D & oth	  |
+CI001                | Bonus & Retirement B	  |
+CI001                | Bonus & Retirement C	  |
+CI001                | Division exp - Labor	  |
+CI002                | General expense        |
+CI002                | Tax & Insurance        |
+CI002                | Repair & Maintenance 	|
+CI002                | R&M Forging Mold	      |
+CI002                | Division exp - Other	  |
+CI002                | Operating supply	      |
+CI003                | Consumable tools	      |
+CI003                | Utilities	            |
+CI003                | Interplant	            |
+CI003                | Depr. - Common Unex.	  |
+CI003                | Division exp - Depre	  |
 Exclusive Investment | Depr. - Unique Unex.	  |
 
 
@@ -539,25 +569,25 @@ Table TB_R_INHOUSE_COST_EG {
 
 
 ---
-### TOOLING_OH
+### TOOLING OH
 
-| Car Series	| TotalPrice/Unit | 
-| ----------- | --------------- |
-| TR	        | 539.962.00      |
-| TR	        | 539.962.00      |
-| TR	        | 539.962.00      |
-| TR	        | 539.962.00      |
-| TR	        | 539.962.00      |
-| TR	        | 539.962.00      |
-| IMV4	      | 758.465.00      |
-| IMV4	      | 758.465.00      |
-| IMV4	      | 758.465.00      |
-| IMV4	      | 758.465.00      |
-| IMV4	      | 758.465.00      |
+| ppr_period | Car Series	| TotalPrice/Unit | 
+| ---------- | ---------- | --------------- |
+| 022025     | TR	        | 539.962.00      |
+| 022025     | TR	        | 539.962.00      |
+| 022025     | TR	        | 539.962.00      |
+| 022025     | TR	        | 539.962.00      |
+| 022025     | TR	        | 539.962.00      |
+| 022025     | TR	        | 539.962.00      |
+| 022025     | IMV4	      | 758.465.00      |
+| 022025     | IMV4	      | 758.465.00      |
+| 022025     | IMV4	      | 758.465.00      |
+| 022025     | IMV4	      | 758.465.00      |
+| 022025     | IMV4	      | 758.465.00      |
 
 
 ---
-### CC
+### Cost Center CC
 
 | Material Code/Part No | Cost Center | Period  | Key               | GPQ    | Key 1                 |
 | --------------------- | ----------- | ------- | ----------------- | ------ | --------------------- |
