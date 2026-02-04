@@ -32,7 +32,7 @@ package "Master Data" {
     for_vh  numeric(15,2) null
   }
 
-  params ||--|| master_eg_model : has one
+  params ||--|| master_eg_model : has many
 
 
   '### PARTS
