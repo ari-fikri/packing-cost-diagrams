@@ -24,9 +24,9 @@ package "Master Data" {
   }
 
   entity "Master EG Model" as master_eg_model {
-    ppr_period  varchar (6) not null (FK, PK)
+    ppr_period varchar (6) not null (FK, PK)
+    eg_model varchar(6) not null (PK)
     --
-    eg_model  varchar(6) not null (FK)
     total_volume numeric(15,2) null
     export_only  numeric(15,2) null
     for_vh  numeric(15,2) null
