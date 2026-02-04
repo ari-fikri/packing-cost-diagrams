@@ -14,12 +14,13 @@ package "Master Data" {
     inflation_labor_percentage numeric(3,2)
     inflation_FOH_var_percentage numeric(3,2)
     inflation_FOH_fix_percentage numeric(3,2)
+    inflation_incremental_depreciation_percentage numeric(3,2) 
     cr_labor_percentage numeric(3,2)
     cr_FOH_var_percentage numeric(3,2)
     cr_FOH_fix_percentage numeric(3,2)
-    press_welding_percentage numeric(3,2)
-    nr_comp_percentage numeric(3,2)
-    tr_comp_percentage numeric(3,2)
+    cr_incremental_depreciation numeric(3,2)
+    threshold_lower_limit_percentage numeric(3,2)
+    threshold_upper_limit_percentage numeric(3,2)
   }
 
   '### PARTS
