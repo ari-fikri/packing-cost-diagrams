@@ -375,6 +375,9 @@ ihp ||--|| analysis
 
 /' SAMPLE DATA
 
+===================
+  MASTER TABLES
+-------------------
 ---
 ### PARTS
 source : from PBMD DB
@@ -387,6 +390,22 @@ source : from PBMD DB
 | 51402-KWW-643 | TDR      | ICE      | TR       |
 
 ---
+### MASTER PARAMS
+
+| ppr_period | period_start | period_end | inflation_labor_percentage | inflation_foh_fix_percentage | inflation_foh_var_percentage | inflation_incremental_depreciation | cr_labor_percentage | cr_foh_fix_percentage | cr_foh_var_percentage | cr_incremental_depreciation | thereshold_lower_limit_percentage | thereshold_upper_limit_percentage |
+| ---------- | ------------ | ---------- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------------- | ------------------- | --------------------- | --------------------- | --------------------------- | --------------------------------- | ----------------------------------|
+| 022025     | 09           | 02         | 3,1                        | 2,1                          | 3,2                          | 3,2                                | 3                   | 2                     | 2,2                   | 2,3                         | 15                                | 15                                |
+
+
+---
+### MASTER_EG_MODEL_ASSUMPTION
+| ppr_period | eg_model | total_volume | export_only | for_vh   |
+| ---------- | -------- | ------------ | ----------- |--------- |
+| 022025     | NR       | 16.410 	     | 17.566 	   | 1.156 	  |
+| 022025     | TR       | 105.581 	   | 93.945 	   | -11.636  |
+
+
+---
 ### COST ITEM MASTER
 | category_id | category_name         |
 | ----------- | --------------------- |
@@ -394,6 +413,7 @@ source : from PBMD DB
 | CI002       | FOH Fixed             |
 | CI003       | FOH Var               | 
 | CI004       | Exclusive Investment  |
+
 
 ---
 ### COST ITEM MAPPING
@@ -422,285 +442,14 @@ CI003                | Division exp - Depre	  |
 Exclusive Investment | Depr. - Unique Unex.	  |
 
 
----
-### ENGINE_TYPE
-Note: NOT USED
 
-| EG_TYPE/Category | Description |
-| ---------------- | ------------------------- |
-| HEV              | Hybrid Electric Vehicle   | 
-| ICE              | Internal Combustion Engine| 
-| BEV              | Battery EV                |  
-| PHEV             | Plug-in Hybrid EV         |  
-| FCEV             | Fuel Cell EV              | 
-| FFHV             | Flex-Fuel Hybrid Engines  |  
-| NG-ICE           | Next Generation ICE       | 
-
----
-### EG_MODEL
-Note: NOT USED
-
-| model_code |  eg_type  |
-| ---------- | --------- |
-|  NR        | ICE       |
-|  TR        | ICE       |
-|  1TR       | ICE       |
-|  2TR       | ICE       |
-
----
-### MATERIAL MASTER
-
-| ID | EG Model | Category |  Casting Part  |    CC   | Material No  |              Material Name                | Material Category |
-|    | -------- | -------- | -------------- | --------|--------------|-------------------------------------------|------------------ |
-|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-010517  | ANTIMON SB 99.0 % MAX (EX. JAPAN YUSHIN ) | Additive          |
-|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-022001  | CARBON LOW NITROGEN	                     | Additive          |
-|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN	     | Additive          |
-|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-061519  | FERRO MANGAN for FCD Cams(13%)            |                   |
-|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-080556  | CARBON G-HIGH JG-01                       |                   |
-|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-010519  | ANTIMON METAL                             |                   |
-|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |
-|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-061519  | FERRO MANGAN for FC (87%)                 |                   |
-|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-062518  | Ferro Silicon Low Al Kinsei Matex Cam's	 | Additive          |
-|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-090720  | Inoculant Ultraseed LG size 0,7-2mm       |                   |
-|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-010518  | ANTIMON (SB) SHOT S 3-8 MM KINSEI MATEC   |                   |
-|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-031560  | CARBON DTCA-09 DURATIGHT / OCTO           |                   |
-|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |
-|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          |
-|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |
-
----
-### MATERIAL COST REPORT
-| EG Model | Category |  Casting Part  |    CC   | Material No  |              Material Name                | Material Category |   Price 	| Gentani |	    Total   |
-| -------- | -------- | -------------- | --------|--------------|-------------------------------------------|------------------ |---------- | ------- | ----------- |
-| NR       |	HEV	    | Block Cylinder | AZC100  | B895-010517  | ANTIMON SB 99.0 % MAX (EX. JAPAN YUSHIN )	| Additive          |	328.333,0	|     0,0	|     4.790,0 |
-| NR       |	HEV	    | Block Cylinder | AZC100  | B895-022001  | CARBON LOW NITROGEN	                      | Additive          |  19.500,0 |     0,7 |    12.843,0 |
-| NR       |	HEV	    | Block Cylinder | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN	      | Additive          |	 28.000,0 |	    0,8	|    21.974,0 |
-| NR       |	HEV	    | Block Cylinder | AZC100  | B895-061519  | FERRO MANGAN for FCD Cams(13%)            |                   |  22.000,0 |         |             |
-| NR       |	HEV	    | Block Cylinder | AZC100  | B895-080556  | CARBON G-HIGH JG-01                       |                   |  18.160,0 |         |             |
-| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-010519  | ANTIMON METAL                             |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-061519  | FERRO MANGAN for FC (87%)                 |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-062518  | Ferro Silicon Low Al Kinsei Matex Cam's	  | Additive          |  29.567,0 |	    0,1 |     1.687,0 |
-| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-090720  | Inoculant Ultraseed LG size 0,7-2mm       |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-010518  | ANTIMON (SB) SHOT S 3-8 MM KINSEI MATEC   |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-031560  | CARBON DTCA-09 DURATIGHT / OCTO           |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |           |         |             |
-| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          | 10.900,0	|     0,0	|       109,0	|
-| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |           |         |             |
-
-GENTANI SUM PER CATEGORY 
-Source :
-Ref : Casting Kalkulasi 1
-Note: Middle Table for Casting Material Cost Report creation, to calculate sum of gentani cost per category per period
-| ppr_period | material_category | gentani_sum_current | gentani_sum_prev |
-| ---------- | ----------------- | ------------------- | ---------------- | 
-| 042025     | Additive          | 3000                | 2500             | 
-| 042025     | Scrap OH          | 3000                | 2500             | 
-
---
-### COST ITEM PER PERIOD
-source: 
-file: Act Cost Report
-sheet: PV 2TR
-| Resource Name	| Plant	| Period/Year |	Bns & Rtrmnt D & oth | Bonus & Retirement A | Bonus & Retirement B | Bonus & Retirement C |	Consumable tools | Depr. - Common Unex.	| Depr. - Unique Unex. | Division exp - Depre |	Division exp - Labor | Division exp - Other	| General expense	 | Interplant	| Labor A |  Labor B | Labor C | Labor D & Others | Operating supply |	R&M Forging Mold | Repair & Maintenance	| Tax & Insurance |	Utilities |  
-| ------------- | ----- | ----------- | -------------------- | -------------------- | -------------------- | -------------------- | -----------------| -------------------- | -------------------- | -------------------- | ---------------------| -------------------- | ---------------- | ---------- | ------- | ---------| ------- |----------------- | ---------------- | ----------------- | -------------------- | --------------- | --------- | 
-| 111010C101	  | 4350	| 004.2025	  |                   62 |               61.428 |                   48 |                   66 |           34.895 |               30.393 |                    0 |                3.329 |              159.495 |               81.500 |       49.201	   |     18.743	| 114.829 |   24.692 |  28.239 |           38.808 |           52.604 |                 0 |              65.668	|           6.046	|    30.630 |
-| 111010C101	  | 4350	| 005.2025	  |                  -13 |               47.834 |                  -14 |                  -27 |           24.374 |               23.947 |                    0 |                2.713 |              130.512 |               65.805 |     35.777	     |     -7.969 |  95.681 |   26.568 |  18.376 |           48.936 |           35.583 |                 0 |              88.246	|           5.739	|    23.272 |
-| 111010C101	  | 4350	| 006.2025	  |                    0 |               40.567 |                    0 |                    0 |           24.613 |               28.650 |                    0 |                3.054 |              140.318 |               94.569 |     63.011	     |      5.890 | 105.877 |   23.494 |  25.569 |           34.737 |           36.316 |                 0 |             122.266	|           4.770 |    28.837 |
-| 111010C101	  | 4350	| 007.2025	  |                    0 |                    0 |                    0 |                    0 |           19.486 |               24.758 |                    0 |                2.668 |              125.196 |               69.762 |     88.652	     |      5.699 |  83.066 |   17.631 |  20.043 |           48.479 |           38.205 |                 0 |             141.940	|           3.975 |    27.326 |
-| 111010C101	  | 4350	| 008.2025	  |                    0 |               75.014 |                    0 |                    0 |           27.847 |               30.482 |                    0 |                3.025 |              154.824 |               53.001 |     57.506	     |      4.582 | 105.380 |   29.593 |  29.858 |           44.548 |           38.234 |                 0 |              77.811	|           5.240	|    24.943 |
-| 111010C101	  | 4350	| 009.2025	  |                    0 |               44.176 |                    0 |                    0 |           18.831 |               22.322 |                    0 |                2.217 |              102.134 |               49.449 |     38.576	     |     11.099 |  77.553 |   20.150 |  22.407 |           35.406 |           28.409 |                 0 |              60.712	|           5.233	|    22.865 |
-| 114010C060	  | 4350	| 004.2025	  |                   67 |               53.220 |               16.516 |                   71 |           64.699 |               59.325 |                  204 |                4.087 |              195.794 |              100.048 |       42.332	   |     23.009 | 100.493 |   55.726 |  31.685 |           43.546 |           69.103 |                 0 |              89.629	|           7.818	|    37.182 |
-| 114010C060	  | 4350	| 005.2025	  |                  -16 |               40.386 |               18.215 |                  -32 |           42.616 |               50.248 |                  173 |                3.448 |              165.867 |               83.631 |       37.713	   |    -10.128 |  81.263 |   62.443 |  20.619 |           54.916 |           53.175 |                 0 |             105.764	|           8.460	|    31.640 |
-| 114010C060	  | 4350	| 006.2025	  |                    0 |               30.142 |                9.693 |                    0 |           34.378 |               51.055 |                  163 |                3.201 |              147.049 |               99.106 |     44.298	     |      6.172 |  83.031 |   50.358 |  28.694 |           38.983 |           36.388 |                 0 |             150.140	|           5.512	|    29.689 |
-| 114010C060	  | 4350	| 007.2025	  |                    0 |                    0 |                    0 |                    0 |           36.669 |               45.909 |                  145 |                3.000 |              140.785 |               78.449 |     87.332	     |      6.408 |  67.671 |   37.981 |  22.493 |           54.405 |           44.342 |                 0 |             166.980	|           4.748	|    31.655 |
-| 114010C060	  | 4350	| 008.2025	  |                    0 |               63.871 |               17.916 |                    0 |           49.914 |               62.026 |                  195 |                4.086 |              209.077 |               71.574 |       60.135	   |      6.187 |  95.148 |   57.132 |  33.508 |           49.994 |           50.512 |                 0 |             154.608	|           6.560	|    31.743 |
-| 114010C060	  | 4350	| 009.2025	  |                    0 |               44.316 |               11.541 |                    0 |           43.159 |               48.381 |                  152 |                3.191 |              146.980 |               71.163 |       44.937	   |     15.972 |  71.219 |   39.183 |  25.146 |           39.734 |           39.867 |                 0 |             115.357	|           7.302	|    30.071 |
-
----
-### PPR DATA
-
-|  part_no (FK) | period/scenario | std_cost | foh_var | foh_fixed | tooling_oh | raw_material | labor | depre_common | depre_exclusive | mh_cost | total_cost | sales_volume | prod_volume |
-| ------------- | --------------- | -------- | ------- | --------- | ---------- | ------------ | ----- | ------------ | --------------- | ------- | ---------- | ------------ | ----------- |
-| 51401-KWW-641	| 2024-08	        | 9300	   | 3170	   | 3091	     | 3363	      | 3083	2965	3358	504	297	19161	0	0
-| 51401-KWW-641	| 2025-02	        | 9533	   | 3249	   | 3168	     | 3447	      | 3160	3039	3442	516	304	19639	0	0
-| 51401-KWW-641	| pbmd_values	9221	3148	3070	3340	3062	2945	3335	501	295	18981	0	0
-| 51401-KWW-641	| inflation	9233	3152	3074	3344	3066	2949	3339	501	295	19004	0	0
-| 51402-KWW-640	| 2024-08	9400	3200	3121	3393	3113	2995	3388	508	299	19269	0	0
-| 51402-KWW-640	| 2025-02	9633	3279	3198	3477	3190	3069	3472	521	307	19739	0	0
-| 51402-KWW-640	| pbmd_values	9321	3178	3100	3370	3092	2975	3365	505	297	19141	0	0
-| 51402-KWW-640	| inflation	9333	3182	3104	3374	3096	2979	3369	506	298	19164	0	0
-| 51402-KWW-641	| 2024-08	8600	3000	2929	2703	2828	3090	2997	450	309	17547	0	0
-| 51402-KWW-641	| 2025-02	8816	3075	3005	2770	2900	3170	3073	461	317	17987	0	0
-| 51402-KWW-641	| pbmd_values	8732	2951	3180	2660	2731	3102	2850	428	310	17474	0	0
-| 51402-KWW-641	| inflation	8669	2934	3165	2651	2726	3100	2852	429	311	17553	0	0
-| 51402-KWW-643	| 2024-08	8900	3020	3169	2811	2669	3058	3149	472	306	17876	0	0
-| 51402-KWW-643	| 2025-02	9621	3259	3422	3037	2881	3304	3401	509	306	19240	0	0
-| 51402-KWW-643	| pbmd_values	9011	3111	3030	2965	2999	2831	3011	452	283	17947	0	0
-| 51402-KWW-643	| inflation	8949	3094	3017	2956	2994	2830	3014	453	284	18033	0	0
-
-
----
-### PPR CALCULATION
-
-| part_no (FK)  | column_name            | group_name  | tooling_oh | raw_material | TOTAL_purchase_cost | labor | foh_fix  | foh_var | depre_common | depre_exclusive | TOTAL_process_cost | manhour | sales_volume | prod_volume |
-| ------------- | ----------             | calculation | ---------- | ------------ | ------------------- | ----- | -------- | ------- | ------------ | --------------- | ------------------ | ------- | ------------ | ----------- |
-| 51401-KWW-641 | 2024-08                | calculation | 3363       | 3083         | 9300                | 2965  | 3091     | 3170    | 3358         | 504             | 297                | 19161   | 0            | 0           |
-| 51401-KWW-641 | 2025-02                | calculation | 3363       | 3083         | 9300                | 2965  | 3091     | 3170    | 3358         | 504             | 297                | 19161   | 0            | 0           |
-| 51402-KWW-643 | 2024-08                | calculation | 2811       | 2669         | 8900                | 2830  | 3169     | 3020    | 472          | 306             | 17876              | 0       | 0            | 0           |
-|               | volume                 | analysis    |
-|               | inflation              | analysis    |
-|               | CR                     | analysis    |
-|               | Material Price Impact  | analysis    |
-|               | Gentan-i Impact        | analysis    |
-|               | Others                 | analysis    |
-
-
----
-### MASTER PARAMS
-| ppr_period | period_start | period_end | inflation_labor_percentage | inflation_foh_fix_percentage | inflation_foh_var_percentage | inflation_incremental_depreciation | cr_labor_percentage | cr_foh_fix_percentage | cr_foh_var_percentage | cr_incremental_depreciation | thereshold_lower_limit_percentage | thereshold_upper_limit_percentage |
-| ---------- | ------------ | ---------- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------------- | ------------------- | --------------------- | --------------------- | --------------------------- | --------------------------------- | ----------------------------------|
-| 022025     | 09           | 02         | 3,1                        | 2,1                          | 3,2                          | 3,2                                | 3                   | 2                     | 2,2                   | 2,3                         | 15                                | 15                                |
-
-
----
-### MASTER_EG_MODEL_ASSUMPTION
-| ppr_period | eg_model | total_volume | export_only | for_vh   |
-| ---------- | -------- | ------------ | ----------- |--------- |
-| 022025     | NR       | 16.410 	     | 17.566 	   | 1.156 	  |
-| 022025     | TR       | 105.581 	   | 93.945 	   | -11.636  |
-
-
-ppr_period
-
-
-****************
-PBMD IHP TABLE
-****************
-Table TB_R_INHOUSE_COST_EG {
-  √ PART_NO varchar(12) [pk]
-  PARENT_PART_NO varchar(12) [pk]
-  PPR_PERIOD varchar(6) [pk]
-  FOB_CALCULATION_ID varchar(20)
-  COST_MOVEMENT_ID varchar(20)
-  √ ENGINE_TYPE varchar(10) [not null]
-  √ PROCESS_LABOR_COST float [not null]
-  √ PROCESS_LABOR_COST_FINAL float [not null]
-  √ PROCESS_FOH_FIXED_COST float [not null]
-  √ PROCESS_FOH_FIXED_COST_FINAL float [not null]
-  √ PROCESS_FOH_VAR_COST float [not null]
-  √ PROCESS_FOH_VAR_COST_FINAL float [not null]
-  √ PROCESS_UNFINISHED_DEPRE_COST float [not null]
-  √ PROCESS_UNFINISHED_DEPRE_COST_FINAL float [not null]
-  √ PROCESS_EXCLUSIVE_DEPRE_COST float [not null]
-  √ PROCESS_EXCLUSIVE_DEPRE_COST_FINAL float [not null]
-  √ PROCESS_TOTAL_PROCESS_COST float [not null]
-  √ PROCESS_TOTAL_PROCESS_COST_FINAL float [not null]
-  √ INHOUSE_MATERIAL_RAW_MATERIAL float [not null]
-  √ INHOUSE_MATERIAL_RAW_MATERIAL_FINAL float [not null]
-  INHOUSE_MATERIAL_TOOLING_OUTHOUSE_COST float [not null]
-  INHOUSE_MATERIAL_TOOLING_OUTHOUSE_COST_FINAL float [not null]
-  TOTAL_INHOUSE_COST float [not null]
-  TOTAL_INHOUSE_COST_FINAL float [not null]
-  REMARK varchar(200)
-  SYSTEM_SRC varchar(25) 
-  CREATED_DT datetime [not null]
-  CREATED_BY varchar(50) [not null]
-  CHANGED_DT datetime [not null]
-  CHANGED_BY datetime [not null]
-  FILE_ID varchar(50) [ref: > TB_R_FILE.FILE_ID, not null]
-}
-
-
-----
-### PPR Columns
-
-| col_id | column_name | group_name |
-| ------ | ----------- | ---------- |
-| 1       | volume                 | analysis    |
-| 2       | inflation              | analysis    |
-| 3       | CR                     | analysis    |
-| 4       | Material Price Impact  | analysis    |
-| 5       | Gentan-i Impact        | analysis    |
-| 6       | Others                 | analysis    |
-
-
----
-### PPR ANALYSIS
-| part_no (FK)  | header_name           | tooling_oh | raw_material | TOTAL_purchase_cost | labor | foh_fix  | foh_var | depre_common | depre_exclusive | TOTAL_process_cost | manhour | sales_volume | prod_volume |
-| ------------- | --------------------- | ---------- | ------------ | ------------------- | ----- | -------- | ------- | ------------ |
-| 51401-KWW-641 | volume                |
-| 51401-KWW-641 | inflation             |
-| 51401-KWW-641 | CR                    |
-| 51401-KWW-641 | Material Price Impact |
-| 51401-KWW-641 | Gentan-i Impact       |
-| 51401-KWW-641 | Others                |
-
-
----
-### PROCESS COST (Source Data Table)
- 
-| Period/Year | Plant | MaterialNumber | Header       | MainCostComponentName | Quantity |
-| ----------- | ----- | -------------- | ------       | --------------------- | -------- |
-| 04.2025     | 4350  | 51401-KWW-641  | Raw Material | Raw Material          | 3083.00  |
-| 04.2025     | 4350  | 51401-KWW-641  | Tooling      | Tooling Outhouse      | 3363.00  |
-| 04.2025     | 4350  | 51401-KWW-641  | Labor        | Labor A               | 2965.00  |
-| 04.2025     | 4350  | 51401-KWW-641  | FOH Fixed    | General Expense       | 1545.50  |
-| 04.2025     | 4350  | 51401-KWW-641  | FOH Fixed    | Tax & Insurance       | 773.50   |
-| 04.2025     | 4350  | 51401-KWW-641  | FOH Fixed    | Repair & Maintenance  | 773.00   |
-| 04.2025     | 4350  | 51401-KWW-641  | FOH Variable | Operating Supply      | 1585.00  |
-| 04.2025     | 4350  | 51401-KWW-641  | FOH Variable | Consumable Tools      | 1585.00  |
-| 04.2025     | 4350  | 51401-KWW-641  | Depreciation | Depre. Common         | 3358.00  |
-| 04.2025     | 4350  | 51401-KWW-641  | Depreciation | Depre. Exclusive      | 504.00   | 
-| 04.2025     | 4350  | 51402-KWW-640  | Raw Material | Raw Material          | 3113.00  |
-| 04.2025     | 4350  | 51402-KWW-640  | Tooling      | Tooling Outhouse      | 3393.00  |
-| 04.2025     | 4350  | 51402-KWW-640  | Labor        | Labor A               | 2995.00  |
-| 04.2025     | 4350  | 51402-KWW-640  | FOH Fixed    | General Expense       | 1560.50  |
-| 04.2025     | 4350  | 51402-KWW-640  | FOH Fixed    | Tax & Insurance       | 780.25   |
-| 04.2025     | 4350  | 51402-KWW-640  | FOH Fixed    | Repair & Maintenance  | 780.25   |
-| 04.2025     | 4350  | 51402-KWW-640  | FOH Variable | Operating Supply      | 1600.00  |
-| 04.2025     | 4350  | 51402-KWW-640  | FOH Variable | Consumable Tools      | 1600.00  |
-| 04.2025     | 4350  | 51402-KWW-640  | Depreciation | Depre. Common         | 3388.00  |
-| 04.2025     | 4350  | 51402-KWW-640  | Depreciation | Depre. Exclusive      | 508.00   |
-| 04.2025     | 4350  | 51402-KWW-641  | Raw Material | Raw Material          | 2828.00  |
-| 04.2025     | 4350  | 51402-KWW-641  | Tooling      | Tooling Outhouse      | 2703.00  |
-| 04.2025     | 4350  | 51402-KWW-641  | Labor        | Labor A               | 3090.00  |
-| 04.2025     | 4350  | 51402-KWW-643  | Raw Material | Raw Material          | 2669.00  |     
-| 04.2025     | 4350  | 51402-KWW-643  | Tooling      | Tooling Outhouse      | 2811.00  |
-| 04.2025     | 4350  | 51402-KWW-643  | Labor        | Labor A               | 3058.00  |
-
----
-### PROCESS COST SUMMARY (Source Data Table)
-Note:
-Quantity already summarized from the PROCESS COST table
-
-| Period/Year | MaterialNumber | header       |  Quantity |
-| ----------- | -------------- | ------------ |  -------- |
-| 04.2025     | 51401-KWW-641  | Labor        |  3083.00  |
-| 04.2025     | 51401-KWW-641  | FOH Fixed    |  3363.00  |
-| 04.2025     | 51401-KWW-641  | FOH Variable |  2965.00  |
-| 04.2025     | 51401-KWW-641  | Depreciation |  1545.50  |
-| 04.2025     | 51401-KWW-641  | Raw Material |  773.50   |
-| 04.2025     | 51401-KWW-641  | Tooling      |  773.00   |
-
-| 04.2025     | 51402-KWW-640  | Labor        |  3393.00  |
-| 04.2025     | 51402-KWW-640  | FOH Fixed    |  2995.00  |
-| 04.2025     | 51402-KWW-640  | FOH Variable |  1560.50  |
-| 04.2025     | 51402-KWW-640  | Depreciation |  780.25   |
-| 04.2025     | 51402-KWW-640  | Raw Material |  780.25   |
-| 04.2025     | 51402-KWW-640  | Tooling      |  1600.00  |
-
-| 04.2025     | 51402-KWW-643  | Labor        | 2828.00   |
-| 04.2025     | 51402-KWW-643  | FOH Fixed    | 2703.00   |
-| 04.2025     | 51402-KWW-643  | FOH Variable | 3090.00   |
-| 04.2025     | 51402-KWW-643  | Depreciation | 2669.00   |     
-| 04.2025     | 51402-KWW-643  | Raw Material | 2811.00   |
-| 04.2025     | 51402-KWW-643  | Tooling      | 3058.00   |
-
-
+===============================
+  INPUT SOURCES and MID TABLES
+-------------------------------
 
 ---
 ### PROD VOLUME
+
 
 | Material   | eBaseQuantity |
 | ---------- | ------------- |
@@ -729,7 +478,7 @@ Quantity already summarized from the PROCESS COST table
 
 
 ---
-### SALES_VOLUME
+### SALES VOLUME
 
 | Product    | Eng.Model | Eng.Type | Quantity | Uom |
 | ---------- | --------- | -------- | -------: | --- |
@@ -751,6 +500,8 @@ Quantity already summarized from the PROCESS COST table
 | 120000C210 | TR        | 1TR      |       18 | PC  |
 
 
+
+
 ---
 ### TOOLING OH
 
@@ -767,6 +518,7 @@ Quantity already summarized from the PROCESS COST table
 | 022025     | IMV4	      | 758.465.00      |
 | 022025     | IMV4	      | 758.465.00      |
 | 022025     | IMV4	      | 758.465.00      |
+
 
 
 ---
@@ -794,6 +546,7 @@ Quantity already summarized from the PROCESS COST table
 
 ---
 ### GPQ
+
 
 | Costing Date | Period/Year | Costing Status | Plant | Material Number | Header       | Main Cost Component Name | Quantity |
 | ------------ | ----------- | -------------- | ----- | --------------- | ------------ | ----------------------- | --------- |
@@ -868,3 +621,433 @@ Quantity already summarized from the PROCESS COST table
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160900	| STEEL RAW MATERIAL SHEET EX STAMPING	        | Scrap	            | 2	    |    0,20	| 400	  |
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160901	| Scrap ex Karawang (Inhouse) 0.16%	            | Scrap	            | 2	    |    0,20	| 400	  |
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160901	| STEEL RAW MATERIAL IN-HOUSE CASTING (KRW)	    | Scrap	            | 2	    |    0,30	| 600	  |
+
+--
+### GENTANI SUM PER CATEGORY 
+Source :
+Ref : Casting Kalkulasi 1
+Note: Middle Table for Casting Material Cost Report creation, to calculate sum of gentani cost per category per period
+
+| ppr_period | material_category | gentani_sum_current | gentani_sum_prev |
+| ---------- | ----------------- | ------------------- | ---------------- | 
+| 042025     | Additive          | 3000                | 2500             | 
+| 042025     | Scrap OH          | 3000                | 2500             | 
+
+
+
+===================
+  REPORTS
+-------------------
+
+---
+### PROCESS COST (Source Data Table)
+ 
+| Period/Year | Plant | MaterialNumber | Header       | MainCostComponentName | Quantity |
+| ----------- | ----- | -------------- | ------       | --------------------- | -------- |
+| 04.2025     | 4350  | 51401-KWW-641  | Raw Material | Raw Material          | 3083.00  |
+| 04.2025     | 4350  | 51401-KWW-641  | Tooling      | Tooling Outhouse      | 3363.00  |
+| 04.2025     | 4350  | 51401-KWW-641  | Labor        | Labor A               | 2965.00  |
+| 04.2025     | 4350  | 51401-KWW-641  | FOH Fixed    | General Expense       | 1545.50  |
+| 04.2025     | 4350  | 51401-KWW-641  | FOH Fixed    | Tax & Insurance       | 773.50   |
+| 04.2025     | 4350  | 51401-KWW-641  | FOH Fixed    | Repair & Maintenance  | 773.00   |
+| 04.2025     | 4350  | 51401-KWW-641  | FOH Variable | Operating Supply      | 1585.00  |
+| 04.2025     | 4350  | 51401-KWW-641  | FOH Variable | Consumable Tools      | 1585.00  |
+| 04.2025     | 4350  | 51401-KWW-641  | Depreciation | Depre. Common         | 3358.00  |
+| 04.2025     | 4350  | 51401-KWW-641  | Depreciation | Depre. Exclusive      | 504.00   | 
+| 04.2025     | 4350  | 51402-KWW-640  | Raw Material | Raw Material          | 3113.00  |
+| 04.2025     | 4350  | 51402-KWW-640  | Tooling      | Tooling Outhouse      | 3393.00  |
+| 04.2025     | 4350  | 51402-KWW-640  | Labor        | Labor A               | 2995.00  |
+| 04.2025     | 4350  | 51402-KWW-640  | FOH Fixed    | General Expense       | 1560.50  |
+| 04.2025     | 4350  | 51402-KWW-640  | FOH Fixed    | Tax & Insurance       | 780.25   |
+| 04.2025     | 4350  | 51402-KWW-640  | FOH Fixed    | Repair & Maintenance  | 780.25   |
+| 04.2025     | 4350  | 51402-KWW-640  | FOH Variable | Operating Supply      | 1600.00  |
+| 04.2025     | 4350  | 51402-KWW-640  | FOH Variable | Consumable Tools      | 1600.00  |
+| 04.2025     | 4350  | 51402-KWW-640  | Depreciation | Depre. Common         | 3388.00  |
+| 04.2025     | 4350  | 51402-KWW-640  | Depreciation | Depre. Exclusive      | 508.00   |
+| 04.2025     | 4350  | 51402-KWW-641  | Raw Material | Raw Material          | 2828.00  |
+| 04.2025     | 4350  | 51402-KWW-641  | Tooling      | Tooling Outhouse      | 2703.00  |
+| 04.2025     | 4350  | 51402-KWW-641  | Labor        | Labor A               | 3090.00  |
+| 04.2025     | 4350  | 51402-KWW-643  | Raw Material | Raw Material          | 2669.00  |     
+| 04.2025     | 4350  | 51402-KWW-643  | Tooling      | Tooling Outhouse      | 2811.00  |
+| 04.2025     | 4350  | 51402-KWW-643  | Labor        | Labor A               | 3058.00  |
+
+
+---
+### MATERIAL COST REPORT
+| EG Model | Category |  Casting Part  |    CC   | Material No  |              Material Name                | Material Category |   Price 	| Gentani |	    Total   |
+| -------- | -------- | -------------- | --------|--------------|-------------------------------------------|------------------ |---------- | ------- | ----------- |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-010517  | ANTIMON SB 99.0 % MAX (EX. JAPAN YUSHIN )	| Additive          |	328.333,0	|     0,0	|     4.790,0 |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-022001  | CARBON LOW NITROGEN	                      | Additive          |  19.500,0 |     0,7 |    12.843,0 |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN	      | Additive          |	 28.000,0 |	    0,8	|    21.974,0 |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-061519  | FERRO MANGAN for FCD Cams(13%)            |                   |  22.000,0 |         |             |
+| NR       |	HEV	    | Block Cylinder | AZC100  | B895-080556  | CARBON G-HIGH JG-01                       |                   |  18.160,0 |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-010519  | ANTIMON METAL                             |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-061519  | FERRO MANGAN for FC (87%)                 |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-062518  | Ferro Silicon Low Al Kinsei Matex Cam's	  | Additive          |  29.567,0 |	    0,1 |     1.687,0 |
+| NR       |	HEV	    | Camshaft 1	   | AZC100  | B895-090720  | Inoculant Ultraseed LG size 0,7-2mm       |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-010518  | ANTIMON (SB) SHOT S 3-8 MM KINSEI MATEC   |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-031560  | CARBON DTCA-09 DURATIGHT / OCTO           |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |           |         |             |
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          | 10.900,0	|     0,0	|       109,0	|
+| NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |           |         |             |
+
+
+
+
+---
+### MATERIAL MASTER
+
+| ID | EG Model | Category |  Casting Part  |    CC   | Material No  |              Material Name                | Material Category |
+|    | -------- | -------- | -------------- | --------|--------------|-------------------------------------------|------------------ |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-010517  | ANTIMON SB 99.0 % MAX (EX. JAPAN YUSHIN ) | Additive          |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-022001  | CARBON LOW NITROGEN	                     | Additive          |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN	     | Additive          |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-061519  | FERRO MANGAN for FCD Cams(13%)            |                   |
+|    | NR       |	HEV	     | Block Cylinder | AZC100  | B895-080556  | CARBON G-HIGH JG-01                       |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-010519  | ANTIMON METAL                             |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-061519  | FERRO MANGAN for FC (87%)                 |                   |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-062518  | Ferro Silicon Low Al Kinsei Matex Cam's	 | Additive          |
+|    | NR       |	HEV	     | Camshaft 1	    | AZC100  | B895-090720  | Inoculant Ultraseed LG size 0,7-2mm       |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-010518  | ANTIMON (SB) SHOT S 3-8 MM KINSEI MATEC   |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-031560  | CARBON DTCA-09 DURATIGHT / OCTO           |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-031561  | CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO  |                   |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          |
+|    | NR       |	HEV	     | Camshaft 2	    | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |
+
+--
+### COST ITEM PER PERIOD
+source: 
+file: Act Cost Report
+sheet: PV 2TR
+| Resource Name	| Plant	| Period/Year |	Bns & Rtrmnt D & oth | Bonus & Retirement A | Bonus & Retirement B | Bonus & Retirement C |	Consumable tools | Depr. - Common Unex.	| Depr. - Unique Unex. | Division exp - Depre |	Division exp - Labor | Division exp - Other	| General expense	 | Interplant	| Labor A |  Labor B | Labor C | Labor D & Others | Operating supply |	R&M Forging Mold | Repair & Maintenance	| Tax & Insurance |	Utilities |  
+| ------------- | ----- | ----------- | -------------------- | -------------------- | -------------------- | -------------------- | -----------------| -------------------- | -------------------- | -------------------- | ---------------------| -------------------- | ---------------- | ---------- | ------- | ---------| ------- |----------------- | ---------------- | ----------------- | -------------------- | --------------- | --------- | 
+| 111010C101	  | 4350	| 004.2025	  |                   62 |               61.428 |                   48 |                   66 |           34.895 |               30.393 |                    0 |                3.329 |              159.495 |               81.500 |       49.201	   |     18.743	| 114.829 |   24.692 |  28.239 |           38.808 |           52.604 |                 0 |              65.668	|           6.046	|    30.630 |
+| 111010C101	  | 4350	| 005.2025	  |                  -13 |               47.834 |                  -14 |                  -27 |           24.374 |               23.947 |                    0 |                2.713 |              130.512 |               65.805 |     35.777	     |     -7.969 |  95.681 |   26.568 |  18.376 |           48.936 |           35.583 |                 0 |              88.246	|           5.739	|    23.272 |
+| 111010C101	  | 4350	| 006.2025	  |                    0 |               40.567 |                    0 |                    0 |           24.613 |               28.650 |                    0 |                3.054 |              140.318 |               94.569 |     63.011	     |      5.890 | 105.877 |   23.494 |  25.569 |           34.737 |           36.316 |                 0 |             122.266	|           4.770 |    28.837 |
+| 111010C101	  | 4350	| 007.2025	  |                    0 |                    0 |                    0 |                    0 |           19.486 |               24.758 |                    0 |                2.668 |              125.196 |               69.762 |     88.652	     |      5.699 |  83.066 |   17.631 |  20.043 |           48.479 |           38.205 |                 0 |             141.940	|           3.975 |    27.326 |
+| 111010C101	  | 4350	| 008.2025	  |                    0 |               75.014 |                    0 |                    0 |           27.847 |               30.482 |                    0 |                3.025 |              154.824 |               53.001 |     57.506	     |      4.582 | 105.380 |   29.593 |  29.858 |           44.548 |           38.234 |                 0 |              77.811	|           5.240	|    24.943 |
+| 111010C101	  | 4350	| 009.2025	  |                    0 |               44.176 |                    0 |                    0 |           18.831 |               22.322 |                    0 |                2.217 |              102.134 |               49.449 |     38.576	     |     11.099 |  77.553 |   20.150 |  22.407 |           35.406 |           28.409 |                 0 |              60.712	|           5.233	|    22.865 |
+| 114010C060	  | 4350	| 004.2025	  |                   67 |               53.220 |               16.516 |                   71 |           64.699 |               59.325 |                  204 |                4.087 |              195.794 |              100.048 |       42.332	   |     23.009 | 100.493 |   55.726 |  31.685 |           43.546 |           69.103 |                 0 |              89.629	|           7.818	|    37.182 |
+| 114010C060	  | 4350	| 005.2025	  |                  -16 |               40.386 |               18.215 |                  -32 |           42.616 |               50.248 |                  173 |                3.448 |              165.867 |               83.631 |       37.713	   |    -10.128 |  81.263 |   62.443 |  20.619 |           54.916 |           53.175 |                 0 |             105.764	|           8.460	|    31.640 |
+| 114010C060	  | 4350	| 006.2025	  |                    0 |               30.142 |                9.693 |                    0 |           34.378 |               51.055 |                  163 |                3.201 |              147.049 |               99.106 |     44.298	     |      6.172 |  83.031 |   50.358 |  28.694 |           38.983 |           36.388 |                 0 |             150.140	|           5.512	|    29.689 |
+| 114010C060	  | 4350	| 007.2025	  |                    0 |                    0 |                    0 |                    0 |           36.669 |               45.909 |                  145 |                3.000 |              140.785 |               78.449 |     87.332	     |      6.408 |  67.671 |   37.981 |  22.493 |           54.405 |           44.342 |                 0 |             166.980	|           4.748	|    31.655 |
+| 114010C060	  | 4350	| 008.2025	  |                    0 |               63.871 |               17.916 |                    0 |           49.914 |               62.026 |                  195 |                4.086 |              209.077 |               71.574 |       60.135	   |      6.187 |  95.148 |   57.132 |  33.508 |           49.994 |           50.512 |                 0 |             154.608	|           6.560	|    31.743 |
+| 114010C060	  | 4350	| 009.2025	  |                    0 |               44.316 |               11.541 |                    0 |           43.159 |               48.381 |                  152 |                3.191 |              146.980 |               71.163 |       44.937	   |     15.972 |  71.219 |   39.183 |  25.146 |           39.734 |           39.867 |                 0 |             115.357	|           7.302	|    30.071 |
+
+
+============
+  THRASH
+------------
+
+---
+### PPR DATA
+
+|  part_no (FK) | period/scenario | std_cost | foh_var | foh_fixed | tooling_oh | raw_material | labor | depre_common | depre_exclusive | mh_cost | total_cost | sales_volume | prod_volume |
+| ------------- | --------------- | -------- | ------- | --------- | ---------- | ------------ | ----- | ------------ | --------------- | ------- | ---------- | ------------ | ----------- |
+| 51401-KWW-641	| 2024-08	        | 9300	   | 3170	   | 3091	     | 3363	      | 3083	2965	3358	504	297	19161	0	0
+| 51401-KWW-641	| 2025-02	        | 9533	   | 3249	   | 3168	     | 3447	      | 3160	3039	3442	516	304	19639	0	0
+| 51401-KWW-641	| pbmd_values	9221	3148	3070	3340	3062	2945	3335	501	295	18981	0	0
+| 51401-KWW-641	| inflation	9233	3152	3074	3344	3066	2949	3339	501	295	19004	0	0
+| 51402-KWW-640	| 2024-08	9400	3200	3121	3393	3113	2995	3388	508	299	19269	0	0
+| 51402-KWW-640	| 2025-02	9633	3279	3198	3477	3190	3069	3472	521	307	19739	0	0
+| 51402-KWW-640	| pbmd_values	9321	3178	3100	3370	3092	2975	3365	505	297	19141	0	0
+| 51402-KWW-640	| inflation	9333	3182	3104	3374	3096	2979	3369	506	298	19164	0	0
+| 51402-KWW-641	| 2024-08	8600	3000	2929	2703	2828	3090	2997	450	309	17547	0	0
+| 51402-KWW-641	| 2025-02	8816	3075	3005	2770	2900	3170	3073	461	317	17987	0	0
+| 51402-KWW-641	| pbmd_values	8732	2951	3180	2660	2731	3102	2850	428	310	17474	0	0
+| 51402-KWW-641	| inflation	8669	2934	3165	2651	2726	3100	2852	429	311	17553	0	0
+| 51402-KWW-643	| 2024-08	8900	3020	3169	2811	2669	3058	3149	472	306	17876	0	0
+| 51402-KWW-643	| 2025-02	9621	3259	3422	3037	2881	3304	3401	509	306	19240	0	0
+| 51402-KWW-643	| pbmd_values	9011	3111	3030	2965	2999	2831	3011	452	283	17947	0	0
+| 51402-KWW-643	| inflation	8949	3094	3017	2956	2994	2830	3014	453	284	18033	0	0
+
+
+---
+### PPR CALCULATION
+
+| part_no (FK)  | column_name            | group_name  | tooling_oh | raw_material | TOTAL_purchase_cost | labor | foh_fix  | foh_var | depre_common | depre_exclusive | TOTAL_process_cost | manhour | sales_volume | prod_volume |
+| ------------- | ----------             | calculation | ---------- | ------------ | ------------------- | ----- | -------- | ------- | ------------ | --------------- | ------------------ | ------- | ------------ | ----------- |
+| 51401-KWW-641 | 2024-08                | calculation | 3363       | 3083         | 9300                | 2965  | 3091     | 3170    | 3358         | 504             | 297                | 19161   | 0            | 0           |
+| 51401-KWW-641 | 2025-02                | calculation | 3363       | 3083         | 9300                | 2965  | 3091     | 3170    | 3358         | 504             | 297                | 19161   | 0            | 0           |
+| 51402-KWW-643 | 2024-08                | calculation | 2811       | 2669         | 8900                | 2830  | 3169     | 3020    | 472          | 306             | 17876              | 0       | 0            | 0           |
+|               | volume                 | analysis    |
+|               | inflation              | analysis    |
+|               | CR                     | analysis    |
+|               | Material Price Impact  | analysis    |
+|               | Gentan-i Impact        | analysis    |
+|               | Others                 | analysis    |
+
+
+****************
+PBMD IHP TABLE
+****************
+Table TB_R_INHOUSE_COST_EG {
+  √ PART_NO varchar(12) [pk]
+  PARENT_PART_NO varchar(12) [pk]
+  PPR_PERIOD varchar(6) [pk]
+  FOB_CALCULATION_ID varchar(20)
+  COST_MOVEMENT_ID varchar(20)
+  √ ENGINE_TYPE varchar(10) [not null]
+  √ PROCESS_LABOR_COST float [not null]
+  √ PROCESS_LABOR_COST_FINAL float [not null]
+  √ PROCESS_FOH_FIXED_COST float [not null]
+  √ PROCESS_FOH_FIXED_COST_FINAL float [not null]
+  √ PROCESS_FOH_VAR_COST float [not null]
+  √ PROCESS_FOH_VAR_COST_FINAL float [not null]
+  √ PROCESS_UNFINISHED_DEPRE_COST float [not null]
+  √ PROCESS_UNFINISHED_DEPRE_COST_FINAL float [not null]
+  √ PROCESS_EXCLUSIVE_DEPRE_COST float [not null]
+  √ PROCESS_EXCLUSIVE_DEPRE_COST_FINAL float [not null]
+  √ PROCESS_TOTAL_PROCESS_COST float [not null]
+  √ PROCESS_TOTAL_PROCESS_COST_FINAL float [not null]
+  √ INHOUSE_MATERIAL_RAW_MATERIAL float [not null]
+  √ INHOUSE_MATERIAL_RAW_MATERIAL_FINAL float [not null]
+  INHOUSE_MATERIAL_TOOLING_OUTHOUSE_COST float [not null]
+  INHOUSE_MATERIAL_TOOLING_OUTHOUSE_COST_FINAL float [not null]
+  TOTAL_INHOUSE_COST float [not null]
+  TOTAL_INHOUSE_COST_FINAL float [not null]
+  REMARK varchar(200)
+  SYSTEM_SRC varchar(25) 
+  CREATED_DT datetime [not null]
+  CREATED_BY varchar(50) [not null]
+  CHANGED_DT datetime [not null]
+  CHANGED_BY datetime [not null]
+  FILE_ID varchar(50) [ref: > TB_R_FILE.FILE_ID, not null]
+}
+
+
+----
+### PPR Columns
+
+| col_id | column_name | group_name |
+| ------ | ----------- | ---------- |
+| 1       | volume                 | analysis    |
+| 2       | inflation              | analysis    |
+| 3       | CR                     | analysis    |
+| 4       | Material Price Impact  | analysis    |
+| 5       | Gentan-i Impact        | analysis    |
+| 6       | Others                 | analysis    |
+
+
+---
+### PPR ANALYSIS
+| part_no (FK)  | header_name           | tooling_oh | raw_material | TOTAL_purchase_cost | labor | foh_fix  | foh_var | depre_common | depre_exclusive | TOTAL_process_cost | manhour | sales_volume | prod_volume |
+| ------------- | --------------------- | ---------- | ------------ | ------------------- | ----- | -------- | ------- | ------------ |
+| 51401-KWW-641 | volume                |
+| 51401-KWW-641 | inflation             |
+| 51401-KWW-641 | CR                    |
+| 51401-KWW-641 | Material Price Impact |
+| 51401-KWW-641 | Gentan-i Impact       |
+| 51401-KWW-641 | Others                |
+
+
+---
+### PROCESS COST SUMMARY (Source Data Table)
+Note:
+Quantity already summarized from the PROCESS COST table
+
+| Period/Year | MaterialNumber | header       |  Quantity |
+| ----------- | -------------- | ------------ |  -------- |
+| 04.2025     | 51401-KWW-641  | Labor        |  3083.00  |
+| 04.2025     | 51401-KWW-641  | FOH Fixed    |  3363.00  |
+| 04.2025     | 51401-KWW-641  | FOH Variable |  2965.00  |
+| 04.2025     | 51401-KWW-641  | Depreciation |  1545.50  |
+| 04.2025     | 51401-KWW-641  | Raw Material |  773.50   |
+| 04.2025     | 51401-KWW-641  | Tooling      |  773.00   |
+
+| 04.2025     | 51402-KWW-640  | Labor        |  3393.00  |
+| 04.2025     | 51402-KWW-640  | FOH Fixed    |  2995.00  |
+| 04.2025     | 51402-KWW-640  | FOH Variable |  1560.50  |
+| 04.2025     | 51402-KWW-640  | Depreciation |  780.25   |
+| 04.2025     | 51402-KWW-640  | Raw Material |  780.25   |
+| 04.2025     | 51402-KWW-640  | Tooling      |  1600.00  |
+
+| 04.2025     | 51402-KWW-643  | Labor        | 2828.00   |
+| 04.2025     | 51402-KWW-643  | FOH Fixed    | 2703.00   |
+| 04.2025     | 51402-KWW-643  | FOH Variable | 3090.00   |
+| 04.2025     | 51402-KWW-643  | Depreciation | 2669.00   |     
+| 04.2025     | 51402-KWW-643  | Raw Material | 2811.00   |
+| 04.2025     | 51402-KWW-643  | Tooling      | 3058.00   |
+
+
+---
+### ENGINE_TYPE
+Note: NOT USED
+
+| EG_TYPE/Category | Description |
+| ---------------- | ------------------------- |
+| HEV              | Hybrid Electric Vehicle   | 
+| ICE              | Internal Combustion Engine| 
+| BEV              | Battery EV                |  
+| PHEV             | Plug-in Hybrid EV         |  
+| FCEV             | Fuel Cell EV              | 
+| FFHV             | Flex-Fuel Hybrid Engines  |  
+| NG-ICE           | Next Generation ICE       | 
+
+
+---
+### EG_MODEL
+Note: NOT USED
+
+| model_code |  eg_type  |
+| ---------- | --------- |
+|  NR        | ICE       |
+|  TR        | ICE       |
+|  1TR       | ICE       |
+|  2TR       | ICE       |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
