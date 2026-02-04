@@ -398,7 +398,7 @@ source : from PBMD DB
 
 
 ---
-### MASTER_EG_MODEL_ASSUMPTION
+### MASTER EG MODEL ASSUMPTION
 | ppr_period | eg_model | total_volume | export_only | for_vh   |
 | ---------- | -------- | ------------ | ----------- |--------- |
 | 022025     | NR       | 16.410 	     | 17.566 	   | 1.156 	  |
