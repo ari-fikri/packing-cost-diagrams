@@ -76,7 +76,9 @@ package "Master Data" {
   entity "Raw Material" as raw_material {
     material_no varchar(12) not null (PK)
     --
-    material_name varchar(24) not null 
+    material_name varchar(100) not null 
+    material_category varchar(50) not null
+    cost_center varchar(7) not null
   }
 
 }
@@ -159,6 +161,19 @@ package "INPUT SOURCES" as source {
     "header" varchar(24) not null  (FK) /'category name'/ 
     main_cost_component_name varchar(50) not null (FK) /'ci_dtl_category_name'/ 
     quantity numeric(7,2) not null
+  }
+
+  entity "Ratio and Gentani Impact" as ragi {
+    ppr_period varchar(6) not null (PK)
+    eg_model varchar(6) not null (PK)
+    eg_type varchar(6) not null (PK)
+    cost_center varchar(7) not null (PK)
+    material_no varchar(12) not null (PK)
+    material_name varchar(100) not null (PK)
+    material_category varchar(50) not null (PK)
+    --
+    price numeric(15,2) not null
+    total numeric(15,2) not null
   }
 
 }
@@ -473,9 +488,10 @@ Note: NOT USED
 | NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-033558  | RECARBURIZER DG-LNS MARUTOYO              | Additive          | 10.900,0	|     0,0	|       109,0	|
 | NR       |	HEV	    | Camshaft 2	   | AZC100  | B895-061517  | FERRO SILICON 0.75 (EXFESIL) YUSHIN       |                   |           |         |             |
 
-GENTANI SUM PER CATEGORY
+GENTANI SUM PER CATEGORY 
 Source :
 Ref : Casting Kalkulasi 1
+Note: Middle Table for Casting Material Cost Report creation, to calculate sum of gentani cost per category per period
 | ppr_period | material_category | gentani_sum_current | gentani_sum_prev |
 | ---------- | ----------------- | ------------------- | ---------------- | 
 | 042025     | Additive          | 3000                | 2500             | 
@@ -658,7 +674,7 @@ Table TB_R_INHOUSE_COST_EG {
 Note:
 Quantity already summarized from the PROCESS COST table
 
-| Period/Year | MaterialNumber | category_id  |  Quantity |
+| Period/Year | MaterialNumber | header       |  Quantity |
 | ----------- | -------------- | ------------ |  -------- |
 | 04.2025     | 51401-KWW-641  | Labor        |  3083.00  |
 | 04.2025     | 51401-KWW-641  | FOH Fixed    |  3363.00  |
@@ -839,3 +855,16 @@ Quantity already summarized from the PROCESS COST table
 | 2025-02-15   | 2025-02     | KA             | 4350  | 51402-KWW-643   | FOH Variable | Utilities               | 755.00    |      
 | 2025-02-15   | 2025-02     | KA             | 4350  | 51402-KWW-643   | Depreciation | Depr. - Common Unex.    | 3149.00   |
 | 2025-02-15   | 2025-02     | KA             | 4350  | 51402-KWW-643   | Depreciation | Depr. - Unique Unex.    | 472.00    |
+
+
+---
+# RATIO AND GENTANI IMPACT
+| ppr_period | eg_model | eg_type | casting_part  | cc      | material_no | material_name                                 | material_category | price | gentani | total |
+|----------- | -------- | ------- | ------------- | ------- | ----------- | --------------------------------------------- | ----------------- | ----- | ------- | ----- |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-031560	| CARBON DTCA-09 DURATIGHT / OCTO	              | Additive	        | 1	    |    0,50	| 500	  |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-031561	| CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO	    | Additive	        | 1.25	|    0,20	| 250	  |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-033558	| RECARBURIZER DG-LNS MARUTOYO	                | Additive	        | 1.1	  |    0,30	| 330	  |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160900	| Scrap ex Import Stamping (inhouse) 99.44%	    | Scrap	            | 2	    |    0,30	| 600	  |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160900	| STEEL RAW MATERIAL SHEET EX STAMPING	        | Scrap	            | 2	    |    0,20	| 400	  |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160901	| Scrap ex Karawang (Inhouse) 0.16%	            | Scrap	            | 2	    |    0,20	| 400	  |
+| 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-160901	| STEEL RAW MATERIAL IN-HOUSE CASTING (KRW)	    | Scrap	            | 2	    |    0,30	| 600	  |
