@@ -23,6 +23,18 @@ package "Master Data" {
     threshold_upper_limit_percentage numeric(3,2)
   }
 
+  entity "Master EG Model" as master_eg_model {
+    ppr_period  varchar (6) not null (FK, PK)
+    --
+    eg_model  varchar(6) not null (FK)
+    total_volume numeric(15,2) null
+    export_only  numeric(15,2) null
+    for_vh  numeric(15,2) null
+  }
+
+  params ||--|| master_eg_model : has one
+
+
   '### PARTS
   entity "Parts" as parts {
     part_no varchar(12) not null (PK)
@@ -519,16 +531,18 @@ sheet: PV 2TR
 
 
 ---
-### MASTER_ASSUMPTION
+### MASTER PARAMS
 | ppr_period | period_start | period_end | inflation_labor_percentage | inflation_foh_fix_percentage | inflation_foh_var_percentage | inflation_incremental_depreciation | cr_labor_percentage | cr_foh_fix_percentage | cr_foh_var_percentage | cr_incremental_depreciation | thereshold_lower_limit_percentage | thereshold_upper_limit_percentage |
 | ---------- | ------------ | ---------- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------------- | ------------------- | --------------------- | --------------------- | --------------------------- | --------------------------------- | ----------------------------------|
+| 022025     | 09           | 02         | 3,1                        | 2,1                          | 3,2                          | 3,2                                | 3                   | 2                     | 2,2                   | 2,3                         | 15                                | 15                                |
 
 
 ---
 ### MASTER_EG_MODEL_ASSUMPTION
-| ppr_period | eg_model | total_volume | export_only | for_vh |
-| ---------- | -------- | ------------ | ----------- |---------|
-
+| ppr_period | eg_model | total_volume | export_only | for_vh   |
+| ---------- | -------- | ------------ | ----------- |--------- |
+| 022025     | NR       | 16.410 	     | 17.566 	   | 1.156 	  |
+| 022025     | TR       | 105.581 	   | 93.945 	   | -11.636  |
 
 
 ppr_period
