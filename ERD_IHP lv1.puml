@@ -23,7 +23,7 @@ package "Master Data" {
     threshold_upper_limit_percentage numeric(3,2)
   }
 
-  entity "TB_M_EG_MODEL_ASSUMPTION" as master_eg_model {
+  entity "TB_M_VOLUME_ASSUMPTION" as master_eg_model {
     ppr_period varchar (6) not null (FK, PK)
     eg_model varchar(6) not null (PK)
     --
@@ -73,7 +73,7 @@ package "Master Data" {
   'for material costs ratio impact per material category column lookup column
   'source : material cost report
   entity "TB_R_RATIO_IMPACT_PER_CATEGORY" as ripc {
-    ppr_period varchar(6) not null (PK)
+    ppr_period varchar(7) not null (PK)
     material_category varchar(50) not null (PK)
     --
     ratio_impact numeric(15,2) not null
@@ -93,19 +93,45 @@ package "Master Data" {
 package "INPUT SOURCES" as source {
   '### PROCESS COST
   'for cost items process cost calculation 
-  entity "TB_R_PROCESS_COST" as process_cost {
-    period_year varchar(7) not null (FK, PK)    /'ppr period'/
+  entity "TB_T_PROCESS_COST" as process_cost {
+    period varchar(7) not null (FK, PK)    /'ppr period'/
     plant varchar(5) not null (FK, PK)
     material_number varchar(12) not null (FK, PK)
-    "header" varchar(24) not null (FK, PK)                   /'category_name'/
-    main_cost_component_name varchar(50) not null (FK, PK)  /'ci_dtl_category_name'/
+    "header" varchar(24) not null (FK, PK)           /'category_name'/
+    main_cost_component_name varchar(50) (FK, PK)    /'ci_dtl_category_name'/
     --
     quantity numeric(7,2) not null
+    costing_date	date not null
+    costing_status	varchar(4) not null
+    costing_run	varchar(10) not null
+    product_category varchar(4) not null
+    car_series_engine_models varchar(5) not null
+    product_purpose	varchar (20)
+    material_type_description	varchar(5) not null
+    material_group_description	varchar(10) not null
+    valuation_type	varchar(4) not null
+    level	varchar(4) not null
+    item_category	varchar(4) not null
+    child_resource_1	varchar(15) 
+    child_resource_2	varchar(1524)
+    child_resource_3	varchar(15)
+    resource_name	varchar(12) not null
+    material_group_component	varchar(12) not null
+    material_group_description_component	varchar(12) not null
+    material_description_component	varchar(50) 
+    plant_component	varchar(5) not null
+    valuation_type_material_component	varchar(5) not null
+    quantity	numeric(7,2) not null
+    unit_of_measure	varchar(4) not null
+    total_value	numeric(15,2) not null
+    price_per_unit	numeric(15,2) not null
+    currency	varchar(3) not null
+    overwrite_price	numeric(15,2)
   }
 
   '### PROCESS COST SUMMARY
   'Summary of Process Cost per material category
-  entity "TB_T_PROCESS_COST_SUMMARY" as process_cost_summary {
+  entity "TB_R_PROCESS_COST_SUMMARY" as process_cost_summary {
     period_year varchar(7) not null (FK, PK) 
     material_number varchar(12) not null (FK, PK)
     "header" varchar(24) not null (FK, PK)   /' value: Labor, FOH Var, FOH Fix, Exclusive Investment, etc, taken from Header column in Process Cost table'/
@@ -125,14 +151,14 @@ package "INPUT SOURCES" as source {
   }  
 
   entity "TB_R_PRODUCT_VOLUME" as prod_vol {
-    period_year varchar(6) not null (FK) (PK)
+    period varchar(6) not null (FK) (PK)
     material varchar (50) not null (FK) (PK) /'material no'/
     --
-    ebase_quantity numeric(7,2) not null
+    base_quantity numeric(7,2) not null
   }
 
   entity "TB_R_SALES_VOLUME" as sales_vol {
-    ppr_period varchar(6) not null (PK, FK)
+    period varchar(6) not null (PK, FK)
     product varchar(24) not null (PK, FK)  /'part_no'/
     --
     eng_model varchar(6) not null
@@ -143,7 +169,7 @@ package "INPUT SOURCES" as source {
 
   parts ||-o{ sales_vol : sold
 
-  entity "TB_R_GPQ" as gpq {
+  entity "TB_T_GPQ" as gpq {
     ppr_period varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
     tr_nr varchar(1) not null
@@ -151,7 +177,7 @@ package "INPUT SOURCES" as source {
   }
 
 
-  entity "TB_T_GPQ" as gpq_summary {
+  entity "TB_R_GPQ" as gpq_summary {
     ppr_period varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
     tr_nr varchar(1) not null (PK)
@@ -161,7 +187,7 @@ package "INPUT SOURCES" as source {
   gpq_summary ||--|| gpq : summarized from
   
   '### COST CENTER
-  entity "TB_R_COST_CENTER" as cc {    
+  entity "TB_T_COST_CENTER" as cc {    
     part_no varchar(12) not null (PK, FK)
     cost_center varchar(7) not null (PK, FK)
     period varchar(6) not null (PK, FK)  /'ppr period'/
@@ -169,7 +195,7 @@ package "INPUT SOURCES" as source {
 
   parts }|--|{ cc : belongs to
 
-  entity "TB_T_CC" as cc_summary {
+  entity "TB_R_COST_CENTER" as cc_summary {
     part_no     varchar(12) not null (FK, PK)
     cost_center varchar(7) not null (FK, PK)
     period varchar(6) not null (PK, FK)
@@ -181,8 +207,9 @@ package "INPUT SOURCES" as source {
   cc_summary ||--|| cc : summarized from
   cc_summary ||--|| gpq_summary : fetch gpq value from
 
-  entity "TB_R_RATIO_AND_GENTANI_IMPACT" as ragi {
-    ppr_period varchar(6) not null (PK)
+  'entity "TB_R_RATIO_AND_GENTANI_IMPACT" as ragi {
+  entity "TB_T_CASTING_MATERIAL" as ragi {
+    period varchar(6) not null (PK)
     eg_model varchar(6) not null (PK)
     eg_type varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
@@ -191,9 +218,11 @@ package "INPUT SOURCES" as source {
     material_category varchar(50) not null (PK)
     --
     price numeric(15,2) not null
+    gentani numeric(15,2) not null
     total numeric(15,2) not null
   }
 
+  raw_material ||--|{ ragi : belongs to
   ragi }|--|| eg_model : importer is
 
 }
@@ -202,7 +231,7 @@ package "REPORT" {
   '### MATERIAL COST
   'for cost items material cost calculation
   entity "TB_R_MATERIAL_COST_REPORT" as mat_cost_rpt {
-    ppr_period varchar(6) not null (PK)
+    period varchar(6) not null (PK)
     eg_model varchar(6) not null (FK, PK)
     eg_type varchar(6) not null (FK, PK)
     casting_part varchar(50) (PK)
@@ -236,7 +265,7 @@ package "REPORT" {
     importer varchar(3) not null (PK)
     eg_type varchar(6) not null (PK)
     eg_model varchar(6) not null (PK)
-    ppr_period varchar(6) not null (FK, PK)
+    period varchar(6) not null (FK, PK)
     --
     tooling_oh_current numeric(12,2)
     raw_material_current numeric(12,2)
@@ -291,7 +320,7 @@ entity "TB_R_IHP_ANALYSIS" as analysis {
   importer varchar(3) not null (PK)
   eg_type varchar(6) not null (PK)
   eg_model varchar(6) not null (PK)
-  ppr_period varchar(6) not null (FK, PK)
+  period varchar(6) not null (FK, PK)
   --
   tooling_oh_volume numeric(12,2)
   raw_material_volume numeric(12,2)
@@ -384,15 +413,6 @@ ihp ||--|| analysis
 
 }
 
-  
-' Relationships
-
-' params ||..|| ihp : "ppr_period"
-' params ||..|| analysis : "ppr_period"
-' cost ||..|| analysis : "part_no"
-' cost ||..|| analysis : "ppr_period"
-' parts ||..|| cost : "part_no"
-
 
 @enduml
 
@@ -415,14 +435,14 @@ source : from PBMD DB
 ---
 ### MASTER PARAMS
 
-| ppr_period | period_start | period_end | inflation_labor_percentage | inflation_foh_fix_percentage | inflation_foh_var_percentage | inflation_incremental_depreciation | cr_labor_percentage | cr_foh_fix_percentage | cr_foh_var_percentage | cr_incremental_depreciation | thereshold_lower_limit_percentage | thereshold_upper_limit_percentage |
+| period | period_start | period_end | inflation_labor_percentage | inflation_foh_fix_percentage | inflation_foh_var_percentage | inflation_incremental_depreciation | cr_labor_percentage | cr_foh_fix_percentage | cr_foh_var_percentage | cr_incremental_depreciation | thereshold_lower_limit_percentage | thereshold_upper_limit_percentage |
 | ---------- | ------------ | ---------- | -------------------------- | ---------------------------- | ---------------------------- | ---------------------------------- | ------------------- | --------------------- | --------------------- | --------------------------- | --------------------------------- | ----------------------------------|
 | 022025     | 09           | 02         | 3,1                        | 2,1                          | 3,2                          | 3,2                                | 3                   | 2                     | 2,2                   | 2,3                         | 15                                | 15                                |
 
 
 ---
 ### MASTER EG MODEL ASSUMPTION
-| ppr_period | eg_model | total_volume | export_only | for_vh   |
+| period | eg_model | total_volume | export_only | for_vh   |
 | ---------- | -------- | ------------ | ----------- |--------- |
 | 022025     | NR       | 16.410 	     | 17.566 	   | 1.156 	  |
 | 022025     | TR       | 105.581 	   | 93.945 	   | -11.636  |
@@ -640,7 +660,7 @@ Fetch GPQ value from PV GPQ Table using Key
 
 
 
-| Costing Date | Period/Year | Costing Status | Plant | Material Number | Header       | Main Cost Component Name | Quantity |
+| Costing Date | period      | Costing Status | Plant | Material Number | Header       | Main Cost Component Name | Quantity |
 | ------------ | ----------- | -------------- | ----- | --------------- | ------------ | ----------------------- | --------- |
 | 2024-08-01   | 2024-08     | KA             | 4350  | 51401-KWW-641   | Raw Material | Direct(Raw) Material    | 3083.00   |
 | 2024-08-01   | 2024-08     | KA             | 4350  | 51401-KWW-641   | Raw Material | LSP - Part Cost         | 450.50    |
@@ -704,7 +724,7 @@ Fetch GPQ value from PV GPQ Table using Key
 
 ---
 # RATIO AND GENTANI IMPACT
-| ppr_period | eg_model | eg_type | casting_part  | cc      | material_no | material_name                                 | material_category | price | gentani | total |
+| eriod | eg_model | eg_type | casting_part  | cc      | material_no | material_name                                 | material_category | price | gentani | total |
 |----------- | -------- | ------- | ------------- | ------- | ----------- | --------------------------------------------- | ----------------- | ----- | ------- | ----- |
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-031560	| CARBON DTCA-09 DURATIGHT / OCTO	              | Additive	        | 1	    |    0,50	| 500	  |
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-031561	| CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO	    | Additive	        | 1.25	|    0,20	| 250	  |
@@ -720,7 +740,7 @@ Source :
 Ref : Casting Kalkulasi 1
 Note: Middle Table for Casting Material Cost Report creation, to calculate sum of gentani cost per category per period
 
-| ppr_period | material_category | gentani_sum_current | gentani_sum_prev |
+| period | material_category | gentani_sum_current | gentani_sum_prev |
 | ---------- | ----------------- | ------------------- | ---------------- | 
 | 042025     | Additive          | 3000                | 2500             | 
 | 042025     | Scrap OH          | 3000                | 2500             | 
@@ -734,7 +754,7 @@ Note:
 key : resource_name + period_year
 GPQ CC column fetch from TB_T_CC using key (part_no/resource_name) + period_year
 
-| resource_name	| plant	| period_year |	bns_rtrmnt_d_oth     | bns_rtrmnt_a         | bns_rtrmnt_b         | bns_rtrmnt_c         |	consumable_tools | depr_common_unex   	| depr_unique_unex     | division_exp_depre   |	division_exp_labor   | division_exp_other  	| general_expense	 | interplant	| labor_a |  labor_b | labor_c | labor_d_others   | operating_supply |	r_m_forging_mold | repair_maintenance  	| tax_insurance   |	utilities | gpq_cc | key	             | labor    | foh_fixed |	foh_Var |	 unfinish_depre |	 exclusive_depre  |
+| resource_name	| plant	| period |	bns_rtrmnt_d_oth     | bns_rtrmnt_a         | bns_rtrmnt_b         | bns_rtrmnt_c         |	consumable_tools | depr_common_unex   	| depr_unique_unex     | division_exp_depre   |	division_exp_labor   | division_exp_other  	| general_expense	 | interplant	| labor_a |  labor_b | labor_c | labor_d_others   | operating_supply |	r_m_forging_mold | repair_maintenance  	| tax_insurance   |	utilities | gpq_cc | key	             | labor    | foh_fixed |	foh_Var |	 unfinish_depre |	 exclusive_depre  |
 | ------------- | ----- | ----------- | -------------------- | -------------------- | -------------------- | -------------------- | -----------------| -------------------- | -------------------- | -------------------- | ---------------------| -------------------- | ---------------- | ---------- | ------- | ---------| ------- |----------------- | ---------------- | ----------------- | -------------------- | --------------- | --------- | ------ | ----------------- |--------- | --------- | ------- | --------------- | ----------------- | 
 | 111010C101	  | 4350	| 004.2025	  |                   62 |               61.428 |                   48 |                   66 |           34.895 |               30.393 |                    0 |                3.329 |              159.495 |               81.500 |           49.201 |     18.743	| 114.829 |   24.692 |  28.239 |           38.808 |           52.604 |                 0 |              65.668	|           6.046	|    30.630 | 30.007 | 111010C10104.2025 |  427.667 |	 202.415 	| 136.872 |	         33.722 |                 - |
 | 111010C101	  | 4350	| 005.2025	  |                  -13 |               47.834 |                  -14 |                  -27 |           24.374 |               23.947 |                    0 |                2.713 |              130.512 |               65.805 |           35.777 |     -7.969 |  95.681 |   26.568 |  18.376 |           48.936 |           35.583 |                 0 |              88.246	|           5.739	|    23.272 | 37.229 | 111010C10105.2025 |  367.853 |	 195.567 	| 75.260 	|          26.660 |                 - |
@@ -761,7 +781,7 @@ source : Cost Item Per Period file, to obtain the value
 
 
 | ------------- | ----- | ----------- | -------------------- | --------- | ------------ | -------------------- | -----------------| -------------------- |
-| Resource Name	| Plant	| ppr_period  |        gpq_cc        | labor     |  FOH Fixed	  |  FOH Var 	           | Unfinish Depre. 	| Exclusive Depre.     |
+| Resource Name	| Plant	| period      |        gpq_cc        | labor     |  FOH Fixed	  |  FOH Var 	           | Unfinish Depre. 	| Exclusive Depre.     |
 | ------------- | ----- | ----------- | -------------------- | --------- | ------------ | -------------------- | -----------------| -------------------- |
 | 111010C101	  | 4350	| 004.2025	  |       236.926        | 2.201.540 |	 1.334.455 	|              575.314 | 177.558          |                      | 
 | 114010C060	  | 4350	| 004.2025	  |        99.422        | 2.556.829 |   1.643.596 	|              804.422 	| 337.957         |                1.032 | 
@@ -773,7 +793,7 @@ source : Cost Item Per Period file, to obtain the value
 File : Process Cost Template
 Sheet : Default
 
-| Period/Year | Plant | MaterialNumber | Header       | MainCostComponentName | Quantity |
+| period | Plant | MaterialNumber | Header       | MainCostComponentName | Quantity |
 | ----------- | ----- | -------------- | ------       | --------------------- | -------- |
 | 04.2025     | 4350  | 51401-KWW-641  | Raw Material | Raw Material          | 3083.00  |
 | 04.2025     | 4350  | 51401-KWW-641  | Tooling      | Tooling Outhouse      | 3363.00  |
