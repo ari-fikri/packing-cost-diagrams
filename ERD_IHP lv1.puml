@@ -7,7 +7,7 @@ skinparam linetype ortho
 package "Master Data" {
   '### master_params
   entity "TB_M_ASSUMPTION" as params {
-    ppr_period varchar(6) not null (PK)
+    period varchar(6) not null (PK)
     --
     ppr_month_start varchar(2) not null
     ppr_month_end varchar(2) not null
@@ -24,7 +24,7 @@ package "Master Data" {
   }
 
   entity "TB_M_VOLUME_ASSUMPTION" as master_eg_model {
-    ppr_period varchar (6) not null (FK, PK)
+    period varchar (6) not null (FK, PK)
     eg_model varchar(6) not null (PK)
     --
     total_volume numeric(15,2) null
@@ -73,7 +73,7 @@ package "Master Data" {
   'for material costs ratio impact per material category column lookup column
   'source : material cost report
   entity "TB_R_RATIO_IMPACT_PER_CATEGORY" as ripc {
-    ppr_period varchar(7) not null (PK)
+    period varchar(7) not null (PK)
     material_category varchar(50) not null (PK)
     --
     ratio_impact numeric(15,2) not null
@@ -144,7 +144,7 @@ package "INPUT SOURCES" as source {
   '### TOOLING OH
   'for cost items tooling outhouse cost calculation
   entity "TB_R_TOOLING_OH" as tooling_OH {
-    ppr_period varchar(6) not null (FK)
+    period varchar(6) not null (FK)
     eng_model varchar(6) not null (PK)
     --
     total_price_per_unit numeric(15,2) not null
@@ -170,7 +170,7 @@ package "INPUT SOURCES" as source {
   parts ||-o{ sales_vol : sold
 
   entity "TB_T_GPQ" as gpq {
-    ppr_period varchar(6) not null (PK)
+    period varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
     tr_nr varchar(1) not null
     gpq numeric(15,2 ) not null
@@ -178,7 +178,7 @@ package "INPUT SOURCES" as source {
 
 
   entity "TB_R_GPQ" as gpq_summary {
-    ppr_period varchar(6) not null (PK)
+    period varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
     tr_nr varchar(1) not null (PK)
     gpq numeric(15,2 ) not null
