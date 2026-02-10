@@ -36,9 +36,9 @@ package "Master Data" {
 
   entity "TB_M_EG_MODEL" as eg_model {
     part_no varchar(12) not null (FK, PK)
-    importer varchar(3) not null (PK)
-    eg_model varchar(6) not null (PK)
-    eg_type varchar(6) not null (PK)
+    importer varchar(3) not null (FK)
+    eg_model varchar(6) not null (FK)
+    eg_type varchar(6) not null (FK)
   }
 
   '### PARTS
