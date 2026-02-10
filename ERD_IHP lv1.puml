@@ -100,32 +100,32 @@ package "INPUT SOURCES" as source {
     "header" varchar(24) not null (FK, PK)           /'category_name'/
     main_cost_component_name varchar(50) (FK, PK)    /'ci_dtl_category_name'/
     --
-    quantity numeric(7,2) not null
-    costing_date	date not null
-    costing_status	varchar(4) not null
-    costing_run	varchar(10) not null
-    product_category varchar(4) not null
-    car_series_engine_models varchar(5) not null
+    quantity numeric(7,2)  
+    costing_date	date  
+    costing_status	varchar(4)  
+    costing_run	varchar(10)  
+    product_category varchar(4)  
+    car_series_engine_models varchar(5)  
     product_purpose	varchar (20)
-    material_type_description	varchar(5) not null
-    material_group_description	varchar(10) not null
-    valuation_type	varchar(4) not null
-    level	varchar(4) not null
-    item_category	varchar(4) not null
+    material_type_description	varchar(5)  
+    material_group_description	varchar(10)  
+    valuation_type	varchar(4) 
+    level	varchar(4) 
+    item_category	varchar(4) 
     child_resource_1	varchar(15) 
     child_resource_2	varchar(1524)
     child_resource_3	varchar(15)
-    resource_name	varchar(12) not null
-    material_group_component	varchar(12) not null
-    material_group_description_component	varchar(12) not null
+    resource_name	varchar(12) 
+    material_group_component	varchar(12)
+    material_group_description_component	varchar(12)
     material_description_component	varchar(50) 
-    plant_component	varchar(5) not null
-    valuation_type_material_component	varchar(5) not null
-    quantity	numeric(7,2) not null
-    unit_of_measure	varchar(4) not null
-    total_value	numeric(15,2) not null
-    price_per_unit	numeric(15,2) not null
-    currency	varchar(3) not null
+    plant_component	varchar(5) 
+    valuation_type_material_component	varchar(5) 
+    quantity	numeric(7,2) 
+    unit_of_measure	varchar(4) 
+    total_value	numeric(15,2) 
+    price_per_unit	numeric(15,2) 
+    currency	varchar(3) 
     overwrite_price	numeric(15,2)
   }
 
