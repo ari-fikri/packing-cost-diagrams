@@ -191,7 +191,7 @@ package "INPUT SOURCES" as source {
     period varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
     --
-    tr_nr varchar(1) not null
+    tr_nr varchar(8) not null /''/
     gpq numeric(15,2 ) not null
     status_code   tinyint  not null
     status_message varchar(255)
@@ -235,6 +235,7 @@ package "INPUT SOURCES" as source {
     period varchar(6) not null (PK)
     eg_model varchar(6) not null (PK)
     eg_type varchar(6) not null (PK)
+    casting_part varchar(100) not null (PK)
     cost_center varchar(7) not null (PK)
     material_no varchar(12) not null (PK)
     material_name varchar(100) not null (PK)
@@ -249,6 +250,7 @@ package "INPUT SOURCES" as source {
 
   raw_material ||--|{ ragi : belongs to
   ragi }|--|| eg_model : importer is
+ 
 
 }
 
@@ -283,7 +285,7 @@ package "REPORT" {
     remark_price_impact varchar(100)
     remark_ratio_gentani_impact varchar(100)
   }
-
+ ragi ||--|| mat_cost_rpt : material Price from
   '### IHP COST
   entity "TB_R_IHP_COST" as ihp {
     part_no varchar(12) not null (FK, PK)
