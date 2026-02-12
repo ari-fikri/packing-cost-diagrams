@@ -104,8 +104,43 @@ package "INPUT SOURCES" as source {
     total_value numeric(15,2) not null
     status_code   tinyint     not null
     status_message varchar(255)
-  
   }
+
+  entity "TB_T_PROCESS_COST_SUMMARY" as process_cost_temp {
+    resource_name varchar(12) not null (PK)
+    plant varchar(5) not null (PK)
+    period varchar(7) not null (PK)
+    --
+    bns_rtrmnt_d_other numeric(15,2)
+    bns_rtrmnt_a numeric(15,2)
+    bns_rtrmnt_b numeric(15,2)
+    bns_rtrmnt_c numeric(15,2)
+    consumable_tools numeric(15,2)
+    depr_common_unex numeric(15,2)
+    depr_unique_unex numeric(15,2)
+    division_exp_depre numeric(15,2)
+    division_exp_labor numeric(15,2)
+    division_exp_other numeric(15,2)
+    general_expense numeric(15,2)
+    interplant numeric(15,2)
+    labor_a numeric(15,2)
+    labor_b numeric(15,2)
+    labor_c numeric(15,2)
+    labor_d_others numeric(15,2)
+    operating_supply numeric(15,2)
+    r_m_forging_mold numeric(15,2)
+    repair_maintenance numeric(15,2)
+    tax_insurance numeric(15,2)
+    utilities numeric(15,2)
+    gpq_cc numeric(15,2)
+    key varchar(12) not null (PK)
+    sum_labor numeric(15,2)
+    sum_foh_fixed numeric(15,2)
+    sum_foh_Var numeric(15,2)
+    sum_unfinish_depre numeric(15,2)
+    sum_exclusive_depre numeric(15,2)te
+  }
+
 
   '### PROCESS COST SUMMARY
   'Summary of Process Cost per material category
@@ -118,7 +153,8 @@ package "INPUT SOURCES" as source {
     total_value numeric(15,2) not null
   }
 
-  process_cost_summary ||--|{ process_cost : detailed in
+  TB_T_PROCESS_COST }|--|| process_cost_temp : summarized in
+  process_cost_summary ||--|{ process_cost_temp : detailed in
 
   '### TOOLING OH
   'for cost items tooling outhouse cost calculation
@@ -750,8 +786,9 @@ Fetch GPQ value from PV GPQ Table using Key
 
 
 ---
+TB_T_CASTING_MATERIAL
 # RATIO AND GENTANI IMPACT
-| eriod      | eg_model | eg_type | casting_part  | cc      | material_no | material_name                                 | material_category | price | gentani | total |
+| period     | eg_model | eg_type | casting_part  | cc      | material_no | material_name                                 | material_category | price | gentani | total |
 |----------- | -------- | ------- | ------------- | ------- | ----------- | --------------------------------------------- | ----------------- | ----- | ------- | ----- |
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-031560	| CARBON DTCA-09 DURATIGHT / OCTO	              | Additive	        | 1	    |    0,50	| 500	  |
 | 0420205    |     TR	  |   1TR   |	Block Cylinder| AZC100	| B895-031561	| CARBURIZER CARBON RISER HCM-A(CPC-A)OCTO	    | Additive	        | 1.25	|    0,20	| 250	  |
