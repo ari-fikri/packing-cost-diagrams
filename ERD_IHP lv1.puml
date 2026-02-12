@@ -100,33 +100,12 @@ package "INPUT SOURCES" as source {
     "header" varchar(24) not null (FK, PK)           /'category_name'/
     main_cost_component_name varchar(50) (FK, PK)    /'ci_dtl_category_name'/
     --
-    quantity numeric(7,2)  
-    costing_date	date  
-    costing_status	varchar(4)  
-    costing_run	varchar(10)  
-    product_category varchar(4)  
-    car_series_engine_models varchar(5)  
-    product_purpose	varchar (20)
-    material_type_description	varchar(5)  
-    material_group_description	varchar(10)  
-    valuation_type	varchar(4) 
-    level	varchar(4) 
-    item_category	varchar(4) 
-    child_resource_1	varchar(15) 
-    child_resource_2	varchar(1524)
-    child_resource_3	varchar(15)
-    resource_name	varchar(12) 
-    material_group_component	varchar(12)
-    material_group_description_component	varchar(12)
-    material_description_component	varchar(50) 
-    plant_component	varchar(5) 
-    valuation_type_material_component	varchar(5) 
-    quantity	numeric(7,2) 
-    unit_of_measure	varchar(4) 
-    total_value	numeric(15,2) 
-    price_per_unit	numeric(15,2) 
-    currency	varchar(3) 
-    overwrite_price	numeric(15,2)
+    quantity numeric(7,2)  not null
+    unit_of_measure varchar(4) not null
+    total_value numeric(15,2) not null
+    status_code   tinyint     not null
+    status_message varchar(255)
+  
   }
 
   '### PROCESS COST SUMMARY
@@ -136,13 +115,24 @@ package "INPUT SOURCES" as source {
     material_number varchar(12) not null (FK, PK)
     "header" varchar(24) not null (FK, PK)   /' value: Labor, FOH Var, FOH Fix, Exclusive Investment, etc, taken from Header column in Process Cost table'/
     --
-    quantity numeric(7,2) not null
+    quantity numeric(7,2)  not null
+    unit_of_measure varchar(4) not null
+    total_value numeric(15,2) not null
   }
 
   process_cost_summary ||--|{ process_cost : detailed in
 
   '### TOOLING OH
   'for cost items tooling outhouse cost calculation
+  entity "TB_T_TOOLING" as toolingTemplate {
+    period varchar(6) not null (FK)
+    eg_model varchar(6) not null (PK)
+    --
+    total_price_per_unit(15,2)not null
+    status_code   tinyint     not null
+    status_message varchar(255)
+   }
+
   entity "TB_R_TOOLING_OH" as tooling_OH {
     period varchar(6) not null (FK)
     eng_model varchar(6) not null (PK)
@@ -150,11 +140,38 @@ package "INPUT SOURCES" as source {
     total_price_per_unit numeric(15,2) not null
   }  
 
+  
+
+   toolingTemplate ||--|| tooling_OH  : based on
+
+  entity "TB_T_PRODUCT_VOLUME" as prodUpload {
+    period varchar(6) not null (FK) (PK)
+    material varchar (50) not null (FK) (PK) /'material no'/
+    --
+    base_quantity numeric(7,2) not null
+    status_code   tinyint     not null
+    status_message varchar(255)
+  }
   entity "TB_R_PRODUCT_VOLUME" as prod_vol {
     period varchar(6) not null (FK) (PK)
     material varchar (50) not null (FK) (PK) /'material no'/
     --
     base_quantity numeric(7,2) not null
+  }
+
+  prodUpload ||--|| prod_vol : processed to
+
+  
+  entity "TB_T_SALES_VOLUME" as salesUpload {
+    period varchar(6) not null (PK, FK)
+    product varchar(24) not null (PK, FK)  /'part_no'/
+    --
+    eng_model varchar(6) not null
+    eng_type varchar(6) not null
+    quantity numeric(7,2) not null
+    uom varchar(4) not null
+    status_code   tinyint     not null
+    status_message varchar(255)
   }
 
   entity "TB_R_SALES_VOLUME" as sales_vol {
@@ -167,45 +184,53 @@ package "INPUT SOURCES" as source {
     uom varchar(4) not null
   }
 
+
+  salesUpload ||--|| sales_vol : processed to
+
   parts ||-o{ sales_vol : sold
 
   entity "TB_T_GPQ" as gpq {
     period varchar(6) not null (PK)
     cost_center varchar(7) not null (PK)
+    --
     tr_nr varchar(1) not null
     gpq numeric(15,2 ) not null
+    status_code   tinyint  not null
+    status_message varchar(255)
   }
 
 
-  entity "TB_R_GPQ" as gpq_summary {
-    period varchar(6) not null (PK)
-    cost_center varchar(7) not null (PK)
-    tr_nr varchar(1) not null (PK)
-    gpq numeric(15,2 ) not null
-  }
+  ' entity "TB_R_GPQ" as gpq_summary {
+  '   period varchar(6) not null (PK)
+  '   cost_center varchar(7) not null (PK)
+  '   tr_nr varchar(1) not null (PK)
+  '   gpq numeric(15,2 ) not null
+  ' }
 
-  gpq_summary ||--|| gpq : summarized from
+  ' gpq_summary ||--|| gpq : summarized from
   
   '### COST CENTER
   entity "TB_T_COST_CENTER" as cc {    
     part_no varchar(12) not null (PK, FK)
     cost_center varchar(7) not null (PK, FK)
     period varchar(6) not null (PK, FK)  /'ppr period'/
+    --
+    status_code   tinyint     not null
+    status_message varchar(255)
   }
 
   parts }|--|{ cc : belongs to
 
-  entity "TB_R_COST_CENTER" as cc_summary {
+  entity "TB_R_GPQ_CC" as cc_summary {
     part_no     varchar(12) not null (FK, PK)
     cost_center varchar(7) not null (FK, PK)
     period varchar(6) not null (PK, FK)
     key varchar(14) not null (PK)
     gpq numeric(15,2 ) not null
-    key_1 varchar(24) not null (PK)
   } 
   
   cc_summary ||--|| cc : summarized from
-  cc_summary ||--|| gpq_summary : fetch gpq value from
+  cc_summary ||--|| gpq : fetch gpq value from
 
   'entity "TB_R_RATIO_AND_GENTANI_IMPACT" as ragi {
   entity "TB_T_CASTING_MATERIAL" as ragi {
@@ -220,6 +245,8 @@ package "INPUT SOURCES" as source {
     price numeric(15,2) not null
     gentani numeric(15,2) not null
     total numeric(15,2) not null
+    status_code   tinyint     not null
+    status_message varchar(255)
   }
 
   raw_material ||--|{ ragi : belongs to
