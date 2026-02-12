@@ -101,7 +101,6 @@ package "INPUT SOURCES" as source {
     main_cost_component_name varchar(50) (FK, PK)    /'ci_dtl_category_name'/
     --
     quantity numeric(7,2)  not null
-    unit_of_measure varchar(4) not null
     total_value numeric(15,2) not null
     status_code   tinyint     not null
     status_message varchar(255)
@@ -116,7 +115,6 @@ package "INPUT SOURCES" as source {
     "header" varchar(24) not null (FK, PK)   /' value: Labor, FOH Var, FOH Fix, Exclusive Investment, etc, taken from Header column in Process Cost table'/
     --
     quantity numeric(7,2)  not null
-    unit_of_measure varchar(4) not null
     total_value numeric(15,2) not null
   }
 
