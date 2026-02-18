@@ -1,0 +1,86 @@
+@startuml
+  
+  
+  start    
+    package "Preparation" #LightBlue{
+    split
+    partition "RPA Download from SAP" #White {
+      floating note left 
+        Download process conducted every <b>9th</b> date 
+        of <b>every month</b>
+      end note
+
+
+      split
+      partition "Process Cost" #LightGrey {
+        split
+          :Download 
+          Process Cost;
+        split again
+          :Download 
+          Cost Center;
+        split again
+          :Download 
+          GPQ Cost;
+        split again
+          :Downlad 
+          Tooling OH;
+        end split
+      }
+      
+      split again
+        :Downlad
+        Manhour;
+      split again
+        :Download 
+        Sales Volume;
+       split again
+        :Download 
+        Produuct Volume; 
+      end split;
+    }
+
+    split again
+    partition "Upload Material Cost" #White {
+
+    
+      :PAD upload Material Cost data for current period;
+      :PUD complete Material Price cost data that has been inputted by PAD;
+      :FD Calculate Material Report;
+    }
+
+  floating note left 
+    PAD entered the material cost first
+    PUD complete the same data after PAD reupload it
+  end note
+
+  split again
+  partition "Master Data" #White {
+      split
+        :Master Data assumption;
+      split again
+        :Master EG Model;
+      end split
+      
+  }
+  end split
+  }
+
+ partition "Calculate IHP" #LightGreen{
+   :Summarize process cost data 
+   for current PPR peiod <b>(6 months)</b>;
+
+   :Calculate Weighted Average Process Cost;
+
+   :Calculate IHP Report;
+   if (out of threshold range?) then (yes)
+      :Add Remark;
+   endif
+
+   :Submit;
+}
+
+:Added to history;
+
+  end
+@enduml  
