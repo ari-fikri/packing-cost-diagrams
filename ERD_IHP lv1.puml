@@ -187,21 +187,9 @@ package "INPUT SOURCES" as source {
     period date  not null (FK)
     eg_model varchar(6) not null (PK)
     --
-    plant varchar(4)
-    valuation_type varchar(4)
-    car_series varchar(4)
-    sum_amount numeric(15,2)
-    sum_quantity numeric(7,2)
-    price_per_unit_unique numeric(15,2)
-    price_per_unit_common numeric(15,2)
     total_price_per_unit(15,2)not null
-    updated varchar(4)
-    created_on date
-    created_by varchar(25)
-    updated_on date
-    updated_by varchar(25)
     status_code   tinyint     not null
-    status_message varchar(255)
+    status_message varchar(255)  not null
    }
 
   entity "TB_R_TOOLING_OH" as tooling_OH {
@@ -220,38 +208,8 @@ package "INPUT SOURCES" as source {
     material varchar (50) not null (FK) (PK) /'material no'/
     --
     base_quantity numeric(7,2) not null
-    document_dt date 
-    material_document_year varchar(4)
-    material_document varchar(12)
-    movement_type varchar(4)
-    final_destination_country varchar(4)
-    base_quantity int(12) 
-    amount_in_lc numeric(15,2)
-    item_text varchar(255)
-    document_header_text varchar(255)
-    plant varchar(4)
-    accounting_doc varchar(12)
-    storage_location varchar(4)
-    material_description varchar(255)
-    movement_type_description varchar(255)
-    module_no varchar(4)
-    purchasing_price_document_curr numeric(15,2)
-    company_code varchar(4)
-    sale_amount numeric(15,2)
-    currency_key varchar(4)
-    cost_center varchar(7)
-    original_material_document varchar(12)
-    profit_center varchar(12)
-    wbs_element varchar(25)
-    gl_account varchar(12)
-    entryDate date
-    entry_time datetime 
-    source_system varchar(255)
-    header_material_bom varchar(25)
-    original_material_document_year varchar(4)
-    entry_quantity int(12)
     status_code   tinyint     not null
-    status_message varchar(255)
+    status_message varchar(255) not null
   }
   entity "TB_R_PRODUCT_VOLUME" as prod_vol {
     period date not null (FK) (PK)
@@ -266,57 +224,13 @@ package "INPUT SOURCES" as source {
   entity "TB_T_SALES_VOLUME" as salesUpload {
     period date not null (PK, FK)
     product varchar(24) not null (PK, FK)  /'part_no'/
-    --
-    cost_element varchar(12)
-    cost_element_text(50)   
+    --  
     eng_model varchar(6) not null
     eng_type varchar(6) not null
     quantity numeric(7,2) not null
     uom varchar(4) not null
-    val_co_area_crcy numeric(15,2)
-    ca_cur varchar(4)
-    company_code varchar(4)
-    profit_center varchar(12)
-    manuf_plant varchar(4)
-    shipment_category varchar(4)
-    final_destination varchar(25)
-    final_destination_country varchar(4)
-    final_destination_region varchar(4)
-    destination varchar(25)
-    desctination_country varchar(4)
-    destination_region varchar(4)
-    customer varchar(12)
-    customer_country varchar(4)
-    customer_region varchar(4)
-    product_group varchar(4)
-    manuf_company varchar(4)
-    manuf_type varchar(4)
-    brand varchar(4)
-    car_series varchar(4)
-    vehicle_name varchar(25)
-    katashiki varchar(25)
-    ctl_katashiki1 varchar(25)
-    katashiki2 varchar(25)
-    ctl_katashiki2 varchar(25)
-    sales_suffix varchar(4)
-    car_family_code varchar(4)
-    drive_train varchar(4)
-    fuel_type varchar(4)
-    transmission varchar(4)
-    color_type varchar(4)
-    type_of_sales varchar(8)
-    project varchar(12)
-    project_description varchar(255)
-    wbs_element varchar(12)
-    lot  varchar(12)
-    production_line varchar(12)
-    business_division varchar(12)
-    series varchar(4)
-    sub_product_group varchar(4)
-    source varchar(12)
-    privilege varchar(4)
     status_code   tinyint     not null
-    status_message varchar(255)
+    status_message varchar(255) not null
   }
 
   entity "TB_R_SALES_VOLUME" as sales_vol {
@@ -338,30 +252,10 @@ package "INPUT SOURCES" as source {
     period date not null (PK)
     cost_center varchar(7) not null (PK)
     --
-    sequence_no int  
-    company_code varchar(4)
-    plant varchar(4)
-    group_counter varchar(4)
     tr_nr varchar(8) not null /''/
     gpq numeric(15,2 ) not null
-    material varchar(50)
-    material_reference varchar(50)
-    base_quantity numeric(7,2)
-    bmh_per_base_quantity numeric(7,2)
-    gpq_ratio numeric(15,2)
-    earned_hour_per_unit numeric(7,2)
-    exterior varchar(4)
-    colour_type varchar(4)
-    deletion_flag varchar(1)
-    source_system varchar(255)
-    created_by varchar(25)
-    created_on date 
-    created_time datetime
-    updated_by varchar(25)
-    updated_on date
-    updated_time datetime
     status_code   tinyint  not null
-    status_message varchar(255)
+    status_message varchar(255) not null
   }
 
 
@@ -380,44 +274,6 @@ package "INPUT SOURCES" as source {
     cost_center varchar(7) not null (PK, FK)
     period date not null (PK, FK)  /'ppr period'/
     --
-    plant varchar(4)  
-    routing_group varchar(12)
-    group_counter varchar(4)
-    routing_description varchar(255)
-    operation_no varchar(4)
-    work_center varchar(12)
-    operation_description varchar(255)
-    shop_costcenter_group varchar(12)
-    sub_assy_k varchar(12)
-    base_quantity numeric(7,2)
-    unit varchar(4)
-    bmh_per_base_quantity numeric(7,2)
-    unit varchar(4)
-    gpq_ratio numeric(15,2)
-    activity_type1 varchar1(12)
-    activity_type1_name varchar(255)
-    activity_type1_rate_per1_bmh numeric(15,2)
-    activity_type1_cost_per_base_quantity numeric(15,2)
-    activity_type2 varchar1(12)
-    activity_type2_name varchar(255)
-    activity_type2_rate_per1_bmh numeric(15,2)
-    activity_type2_cost_per_base_quantity numeric(15,2)
-    activity_type3 varchar1(12)
-    activity_type3_name varchar(255)
-    activity_type3_rate_per1_bmh numeric(15,2)
-    activity_type3_cost_per_base_quantity numeric(15,2)
-    activity_type4 varchar1(12)
-    activity_type4_name varchar(255)
-    activity_type4_rate_per1_bmh numeric(15,2)
-    activity_type4_cost_per_base_quantity numeric(15,2)
-    activity_type5 varchar1(12)
-    activity_type5_name varchar(255)
-    activity_type5_rate_per1_bmh numeric(15,2)
-    activity_type5_cost_per_base_quantity numeric(15,2)
-    activity_type6 varchar1(12)
-    activity_type6_name varchar(255)
-    activity_type6_rate_per1_bmh numeric(15,2)
-    activity_type6_cost_per_base_quantity numeric(15,2)
     status_code   tinyint     not null
     status_message varchar(255)
   }
