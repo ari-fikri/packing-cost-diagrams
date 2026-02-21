@@ -3,10 +3,10 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
-
+TB_M_ASSUMPTION
 package "Master Data" {
   '### master_params
-  entity "TB_M_ASSUMPTION" as params {
+  entity "" as params {
     period date not null (PK)
     --
     ppr_month_start varchar(2) not null
@@ -354,6 +354,7 @@ package "REPORT" {
     eg_type varchar(6) not null (PK)
     eg_model varchar(6) not null (PK)
     period date not null (FK, PK)
+    '\Current  
     --
     tooling_oh_current numeric(12,2)
     raw_material_current numeric(12,2)
@@ -364,10 +365,12 @@ package "REPORT" {
     depre_common_current numeric(12,2)
     depre_exclusive_current numeric(12,2)
     TOTAL_process_cost_current numeric(12,2)
+    total_cost_current numeric(12,2)
     manhour_current numeric(12,2)
     sales_volume_current numeric(12,2)
     prod_volume_current numeric(12,2)
 
+    '\Previous
     tooling_oh_prev numeric(12,2)
     raw_material_prev numeric(12,2)
     TOTAL_purchase_cost_prev numeric(12,2)
@@ -377,10 +380,12 @@ package "REPORT" {
     depre_common_prev numeric(12,2)
     depre_exclusive_prev numeric(12,2)
     TOTAL_process_cost_prev numeric(12,2)
+    total_cost_prev numeric(12,2)
     manhour_prev numeric(12,2)
     sales_volume_prev numeric(12,2)
     prod_volum_preve numeric(12,2)
 
+    '\PBMD
     tooling_oh_pbmd numeric(12,2)
     raw_material_pbmd numeric(12,2)
     TOTAL_purchase_cost_pbmd numeric(12,2)
@@ -390,9 +395,17 @@ package "REPORT" {
     depre_common_pbmd numeric(12,2)
     depre_exclusive_pbmd numeric(12,2)
     TOTAL_process_cost_pbmd numeric(12,2)
+    total_cost_pbmd numeric(12,2)
     manhour_pbmd numeric(12,2)
     sales_volume_pbmd numeric(12,2)
-    prod_volum_prevpbmdmeric(12,2)    
+    prod_volume_pbmd numeric(12,2)
+
+    '\Comparation
+    diff_amt numeric(12,2) 
+    diff_percentage numeric(12,2)
+
+    --
+    remark varchar(100) 
   }
 
   ihp ||--o| params : calculated using
