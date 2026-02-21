@@ -3,10 +3,9 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
-TB_M_ASSUMPTION
 package "Master Data" {
   '### master_params
-  entity "" as params {
+  entity "TB_M_ASSUMPTION" as params {
     period date not null (PK)
     --
     ppr_month_start varchar(2) not null
